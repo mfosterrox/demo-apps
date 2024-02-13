@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: rails-app
-        image: ministryofjustice/cloud-platform-multi-container-demo-app:rails-app-1.6
+        image: quay.io/mfoster/vulnerable-demo-applications:content-api-0.1
         ports:
         - containerPort: 3000
         env:

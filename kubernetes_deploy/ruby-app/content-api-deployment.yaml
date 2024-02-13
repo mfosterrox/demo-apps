@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: content-api
-        image: ministryofjustice/cloud-platform-multi-container-demo-app:content-api-1.6
+        image: quay.io/mfoster/vulnerable-demo-applications:content-api-0.1
         ports:
         - containerPort: 4567
