@@ -1,5 +1,0 @@
-.DS_Store
-.bundle
-rails-app/log/*.log
-rails-app/tmp
-
