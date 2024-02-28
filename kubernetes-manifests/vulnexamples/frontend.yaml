@@ -1,0 +1,24 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: quay.io/rhacs-misc/log4shell:1.0
+        securityContext:
+          allowPrivilegeEscalation: false
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP

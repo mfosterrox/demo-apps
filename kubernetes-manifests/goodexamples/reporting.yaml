@@ -1,0 +1,55 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reporting
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: reporting
+  template:
+    metadata:
+      labels:
+        app: reporting
+    spec:
+      containers:
+      - name: reporting
+        image: quay.io/rhacs-misc/springboot:1.0
+        securityContext:
+          allowPrivilegeEscalation: false
+          readonlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+            add:
+              - NET_RAW
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  creationTimestamp: null
+  name: reporting-netpol
+spec:
+  egress:
+  - ports:
+    - port: 53
+      protocol: UDP
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: frontend
+    ports:
+    - port: 8080
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      app: reporting
+  policyTypes:
+  - Ingress
+  - Egress

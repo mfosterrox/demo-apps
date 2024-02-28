@@ -1,0 +1,34 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cam
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cam
+  template:
+    metadata:
+      labels:
+        app: cam
+    spec:
+      containers:
+      - name: cam
+        image: quay.io/rhacs-misc/centralapi:1.0
+        volumeMounts:
+          - name: foo
+            mountPath: "/etc/apitoken"
+            readOnly: true
+        securityContext:
+          allowPrivilegeEscalation: false
+          readonlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+            add:
+              - NET_RAW
+      volumes:
+        - name: apitoken
+          secret:
+            secretName: apitoken

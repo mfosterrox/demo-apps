@@ -1,0 +1,32 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-server
+  template:
+    metadata:
+      labels:
+        app: api-server
+    spec:
+      containers:
+      - name: ubi
+        image: redhat/ubi8
+        command: [ "/bin/bash", "-c", "--" ]
+        args: [ "while true; do sleep 30; done;" ]
+        securityContext:
+          allowPrivilegeEscalation: false
+          readonlyRootFilesystem: true
+          capabilities:
+            add: SYS_ADMIN
+        env:
+        - name: DB_PASSWORD_SECRET
+          value: "SECRET"
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP

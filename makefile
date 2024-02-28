@@ -2,20 +2,20 @@ TEAM_NAME := mfoster
 REPO_NAME := vulnerable-demo-applications
 VERSION := 0.1
 
-COMPONENTS := damn-vulnerable-graphql-application juice-shop ctf-web-to-system log4shell-vulnerable-app
+APPLICATIONS:= central-api-manipulator ctf-web-to-system damn-vulnerable-graphql-application juice-shop log4shell rce-exploit rce-http-exploit springboot
 
 build-images:
-	for component in $(COMPONENTS); do \
-		( cd $${component}; docker build -t $(TEAM_NAME)/$(REPO_NAME):$${component} . ); \
+	for component in $(APPLICATIONS); do \
+		( cd app-images/$${component}; docker build --platform linux/amd64 -t $(TEAM_NAME)/$(REPO_NAME):$${component} . ); \
 	done
 
 tag-images:
-	for component in $(COMPONENTS); do \
+	for component in $(APPLICATIONS); do \
 		docker tag $(TEAM_NAME)/$(REPO_NAME):$${component} quay.io/$(TEAM_NAME)/$(REPO_NAME):$${component}-$(VERSION); \
 	done
 
 push-images:
-	for component in $(COMPONENTS); do \
+	for component in $(APPLICATIONS); do \
 		docker push quay.io/$(TEAM_NAME)/$(REPO_NAME):$${component}-$(VERSION); \
 	done
 

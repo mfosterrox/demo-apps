@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import server = require('./../server')
+import server = require('../server')
 
 // eslint-disable-next-line no-async-promise-executor,@typescript-eslint/no-misused-promises
 export = async () => {

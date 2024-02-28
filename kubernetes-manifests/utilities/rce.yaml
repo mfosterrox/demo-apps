@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rce
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rce
+  template:
+    metadata:
+      labels:
+        app: rce
+    spec:
+      containers:
+      - name: rce
+        image: quay.io/rhacs-misc/rce:1.0
+        ports:
+          - containerPort: 8080
+            name: http
+            protocol: TCP
+        securityContext:
+          allowPrivilegeEscalation: false
+          readonlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rce-service
+spec:
+  type: ClusterIP
+  selector:
+    app: rce
+  ports:
+  - name: rce-http
+    port: 80
+    protocol: TCP
+    targetPort: 8080

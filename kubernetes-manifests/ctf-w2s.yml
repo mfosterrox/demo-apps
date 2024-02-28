@@ -7,21 +7,9 @@ spec:
     app: ctf-web-app  # This should match the labels of your pods
   ports:
     - protocol: TCP
-      port: 9090  # The service port
-      targetPort: 9090  # The container port
-  type: ClusterIP  # This makes the service only reachable within the cluster
----
-apiVersion: route.openshift.io/v1
-kind: Route
-metadata:
-  name: ctf-web-app-route
-spec:
-  to:
-    kind: Service
-    name: ctf-web-app-service  # This should match the name of your service
-  port:
-    targetPort: 9090  # The target port on the service
-  wildcardPolicy: None
+      port: 80  # Port that the load balancer will serve on
+      targetPort: 9090  # Port your application is listening on
+  type: LoadBalancer
 ---
 apiVersion: apps/v1
 kind: Deployment
