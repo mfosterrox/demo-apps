@@ -17,6 +17,7 @@ metadata:
   name: dvga-app
   labels:
     app: dvga-app
+    demo: roadshow
 spec:
   replicas: 1
   selector:

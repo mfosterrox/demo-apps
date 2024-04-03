@@ -1,8 +1,9 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: api-server
+  labels:
+    demo: roadshow
 spec:
   replicas: 1
   selector:
@@ -22,7 +23,8 @@ spec:
           allowPrivilegeEscalation: false
           readonlyRootFilesystem: true
           capabilities:
-            add: SYS_ADMIN
+            add: 
+              - SYS_ADMIN
         env:
         - name: DB_PASSWORD_SECRET
           value: "SECRET"

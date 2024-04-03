@@ -1,0 +1,20 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: build-and-push-image
+spec:
+  tasks:
+    - name: build-and-push
+      taskRef:
+        name: buildah
+      params:
+        - name: IMAGE
+          value: your-local-registry.example.com/your-image:latest
+        - name: DOCKERFILE
+          value: path/to/your/Dockerfile
+        - name: CONTEXT
+          value: path/to/your/context
+        - name: TLSVERIFY
+          value: "false" # Set to "true" if you need to verify the TLS certificate
+        - name: PUSH_IMAGENAME
+          value: your-local-registry.example.com/your-image:latest
