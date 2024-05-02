@@ -30,6 +30,6 @@ spec:
     spec:
       containers:
       - name: ctf-web-container
-        image: CHANGEME
+        image: quay.io/jechoisec/ctf-web-to-system-01
         ports:
         - containerPort: 9090
