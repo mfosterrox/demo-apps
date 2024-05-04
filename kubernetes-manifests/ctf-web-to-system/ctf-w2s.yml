@@ -18,6 +18,8 @@ metadata:
   labels:
     app: ctf-web-to-system
     demo: roadshow
+  annotation:
+    app: ctf-web-to-system
 spec:
   replicas: 1
   selector:
