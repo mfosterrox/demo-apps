@@ -39,7 +39,7 @@ metadata:
 spec:
   egress:
   - ports:
-    - port: 53
+    - port: dns
       protocol: UDP
   ingress:
   - from:
