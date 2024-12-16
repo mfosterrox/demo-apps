@@ -1,0 +1,37 @@
+apiVersion: config.stackrox.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: package-manager-execution-enforce-all
+spec:
+  policyName: Package Manager Execution - Runtime Enforcement
+  description: Alert and bock all package managers from executing at runtime.
+  rationale: The use of package managers at runtime indicates that new software may be introduced into containers while they are running.
+  remediation: Run `dpkg -r --force-all apt && dpkg -r --force-all debconf dpkg` in the image build for production containers. Change applications to no longer use package managers at runtime, if applicable.
+  disabled: false
+  categories:
+    - Package Management
+  lifecycleStages:
+    - RUNTIME
+  eventSource: DEPLOYMENT_EVENT
+  severity: MEDIUM_SEVERITY
+  enforcementActions:
+    - FAIL_KUBE_REQUEST_ENFORCEMENT
+    - KILL_POD_ENFORCEMENT
+  policySections:
+    - policyGroups:
+        - fieldName: Process Name
+          booleanOperator: OR
+          values:
+            - value: apt-get|apt|dpkg
+            - value: apk
+            - value: rpm|microdnf|dnf|yum
+  mitreAttackVectors:
+    - tactic: TA0011
+      techniques:
+        - T1105
+    - tactic: TA0008
+      techniques:
+        - T1570
+  criteriaLocked: false
+  mitreVectorsLocked: false
+  isDefault: false
