@@ -1,0 +1,38 @@
+apiVersion: config.stackrox.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: 60-day-image-age
+spec:
+  policyName: 60-Day Image Age
+  description: Alert on deployments with images that haven't been updated in 90 days
+  rationale: Base images are updated frequently with bug fixes and vulnerability patches. Image age exceeding 90 days may indicate a higher risk of vulnerabilities existing in the image.
+  remediation: Rebuild your image, push a new minor version (with a new immutable tag), and update your service to use it.
+  categories:
+    - DevOps Best Practices
+    - Security Best Practices
+    - Supply Chain Security
+  lifecycleStages:
+    - BUILD
+    - DEPLOY
+  eventSource: NOT_APPLICABLE
+  exclusions:
+    - deployment:
+        scope:
+          namespace: kube-system
+    - deployment:
+        scope:
+          namespace: istio-system
+    - deployment:
+        name: node-resolver
+  severity: HIGH_SEVERITY
+  notifiers:
+    - '#acs-staging-slack-notifications'
+  policySections:
+    - policyGroups:
+        - fieldName: Image Age
+          booleanOperator: OR
+          values:
+            - value: "60"
+  criteriaLocked: false
+  mitreVectorsLocked: false
+  isDefault: false
