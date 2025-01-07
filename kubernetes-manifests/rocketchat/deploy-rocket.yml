@@ -12,6 +12,7 @@ spec:
     metadata:
       labels:
         app: rocketchat
+        demo: roadshow
     spec:
       containers:
         - name: rocketchat

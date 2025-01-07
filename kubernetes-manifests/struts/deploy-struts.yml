@@ -4,6 +4,7 @@ metadata:
   name: apache-struts
   labels:
     app: apache-struts
+    demo: roadshow
 spec:
   replicas: 2
   selector:

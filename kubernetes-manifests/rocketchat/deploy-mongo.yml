@@ -8,6 +8,8 @@ spec:
   replicas: 1
   selector:
     app: rocketchat-db
+  labels:
+    demo: roadshow
   strategy:
     type: Recreate
   template:
