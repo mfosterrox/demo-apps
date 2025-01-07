@@ -1,5 +1,0 @@
-Great! You got the second flag:
-
-flag{sec0nd_flag}
-
-Now you may be wondering what the 'lookatme' is...?

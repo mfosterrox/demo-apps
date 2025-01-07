@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webgoat
+  labels:
+    app: webgoat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webgoat
+  template:
+    metadata:
+      labels:
+        app: webgoat
+    spec:
+      containers:
+      - name: webgoat
+        image: webgoat/webgoat:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: WEBGOAT_PORT
+          value: "8080"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webgoat
+  labels:
+    app: webgoat
+spec:
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: webgoat
+  type: ClusterIP
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: webgoat
+  labels:
+    app: webgoat
+spec:
+  to:
+    kind: Service
+    name: webgoat
+  port:
+    targetPort: 8080
+  tls:
+    termination: edge
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: webgoat-config
+  labels:
+    app: webgoat
+data:
+  WEBGOAT_PORT: "8080"
+---
