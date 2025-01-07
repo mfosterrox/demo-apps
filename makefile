@@ -1,12 +1,12 @@
 TEAM_NAME := mfoster
 REPO_NAME := vulnerable-demo-applications
-VERSION := 0.1
+VERSION := 0.2
 
-APPLICATIONS:= central-api-manipulator ctf-web-to-system damn-vulnerable-graphql-application juice-shop log4shell rce-exploit rce-http-exploit springboot
+APPLICATIONS:= juice-shop log4shell nodejs-goof-vuln-main rce-exploit rce-http-exploit struts webgoat
 
 build-images:
 	for component in $(APPLICATIONS); do \
-		( cd app-images/$${component}; docker build --platform linux/amd64 -t $(TEAM_NAME)/$(REPO_NAME):$${component} . ); \
+		( cd app-images/$${component}; docker build -t $(TEAM_NAME)/$(REPO_NAME):$${component} . ); \
 	done
 
 tag-images:

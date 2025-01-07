@@ -1,0 +1,23 @@
+FROM tomcat:8.5
+
+# Set environment variables
+ENV STRUTS_VERSION=2.5.14
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    wget \
+    unzip && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Download and deploy Apache Struts example application
+WORKDIR /usr/local/tomcat/webapps/
+RUN wget https://downloads.apache.org/struts/${STRUTS_VERSION}/struts-${STRUTS_VERSION}-apps.zip && \
+    unzip struts-${STRUTS_VERSION}-apps.zip && \
+    mv struts2-blank/ROOT.war ./ROOT.war && \
+    rm -rf struts-${STRUTS_VERSION}-apps.zip struts2-blank/
+
+# Expose port 8080
+EXPOSE 8080
+
+# Start Tomcat server
+CMD ["catalina.sh", "run"]
