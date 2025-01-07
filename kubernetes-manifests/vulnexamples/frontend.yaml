@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: quay.io/rhacs-misc/log4shell:1.0
+        image: quay.io/mfoster/vulnerable-demo-applications:log4shell-0.2
         securityContext:
           allowPrivilegeEscalation: false
         ports:

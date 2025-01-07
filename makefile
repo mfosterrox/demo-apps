@@ -6,7 +6,7 @@ APPLICATIONS:= juice-shop log4shell nodejs-goof-vuln-main rce-exploit rce-http-e
 
 build-images:
 	for component in $(APPLICATIONS); do \
-		( cd app-images/$${component}; docker build -t $(TEAM_NAME)/$(REPO_NAME):$${component} . ); \
+		( cd app-images/$${component}; docker build -t quay.io/$(TEAM_NAME)/$(REPO_NAME):$${component} . ); \
 	done
 
 tag-images:
@@ -27,5 +27,4 @@ rm-all-images:
 
 build-tag-and-push:
 	make build-images
-	make tag-images
 	make push-images
