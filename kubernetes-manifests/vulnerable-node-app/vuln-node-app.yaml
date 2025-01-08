@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: vulnerable-node-app
-  namespace: default
   labels: 
     demo: roadshow
 spec:
