@@ -2,7 +2,7 @@ TEAM_NAME := mfoster
 REPO_NAME := vulnerable-demo-applications
 VERSION := 0.2
 
-APPLICATIONS:= dvwa juice-shop log4shell nodejs-goof-vuln-main patient-portal-acm-demo rce-exploit rce-http-exploit webgoat
+APPLICATIONS:= dvwa juice-shop log4shell nodejs-goof-vuln-main patient-portal-acm-skupper-demo rce-exploit rce-http-exploit webgoat
 
 build-images:
 	for component in $(APPLICATIONS); do \
