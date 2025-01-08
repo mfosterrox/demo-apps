@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,11 +17,11 @@ spec:
     spec:
       containers:
       - name: log4shell
-        image: quay.io/mfoster/vulnerable-demo-applications:log4shell-0.2
+        image: ghcr.io/christophetd/log4shell-vulnerable-app:latest
         securityContext:
           allowPrivilegeEscalation: true
         ports:
-        - containerPort: 80
+        - containerPort: 8080
           name: http
           protocol: TCP
 ---
@@ -30,11 +31,11 @@ metadata:
   name: log4shell-service
 spec:
   selector:
-    app: frontend
+    app: log4shell
   ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 80
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
 ---
 apiVersion: route.openshift.io/v1
 kind: Route
