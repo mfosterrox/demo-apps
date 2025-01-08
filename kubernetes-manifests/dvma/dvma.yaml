@@ -1,1 +1,22 @@
 apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dvma
+  labels: 
+    demo: roadshow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dvma
+  template:
+    metadata:
+      labels:
+        app: dvma
+    spec:
+      containers:
+        - name: dvma
+          image: docker.io/seanrickerd/dvma
+          command: ["/bin/bash", "-c", "while true; do sleep 1000; done"]
+          stdin: true
+          tty: true
