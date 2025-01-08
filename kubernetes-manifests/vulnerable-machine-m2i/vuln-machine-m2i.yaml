@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vulnerable-machine
+  namespace: vulnerables
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vulnerable-machine
+  template:
+    metadata:
+      labels:
+        app: vulnerable-machine
+    spec:
+      containers:
+        - name: vulnerable-ubuntu
+          image: docker.io/seanrickerd/vulnerable_machine_m2i
+          command: ["/bin/bash", "-c", "while true; do sleep 1000; done"]
+          stdin: true
+          tty: true
