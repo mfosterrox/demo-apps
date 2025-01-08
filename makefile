@@ -2,7 +2,7 @@ TEAM_NAME := mfoster
 REPO_NAME := vulnerable-demo-applications
 VERSION := 0.2
 
-APPLICATIONS:= juice-shop log4shell nodejs-goof-vuln-main rce-exploit rce-http-exploit struts webgoat
+APPLICATIONS:= dvwa juice-shop log4shell nodejs-goof-vuln-main patient-portal-acm-demo rce-exploit rce-http-exploit webgoat
 
 build-images:
 	for component in $(APPLICATIONS); do \
@@ -27,4 +27,5 @@ rm-all-images:
 
 build-tag-and-push:
 	make build-images
+	make tag-images
 	make push-images

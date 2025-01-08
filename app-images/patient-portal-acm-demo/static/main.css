@@ -1,0 +1,29 @@
+@import url("./gesso/main.css");
+
+body.login > section > div {
+    width: 640px;
+}
+
+body.login h1 {
+    font-weight: 400;
+}
+
+body.login h1 > span {
+    font-size: 1.4em;
+}
+
+body.login nav {
+    list-style: none;
+}
+
+body.login nav > a {
+    display: block;
+}
+
+span#patient-name, span#doctor-name {
+    font-weight: 600;
+}
+
+#log-out-link {
+    margin-left: 2em;
+}
