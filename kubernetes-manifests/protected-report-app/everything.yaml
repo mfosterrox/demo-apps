@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: reporting
-        image: quay.io/rhacs-misc/springboot:1.0
+        image: quay.io/rhacs-misc/log4shell-minimal:1.2
         securityContext:
           allowPrivilegeEscalation: false
           readonlyRootFilesystem: true
