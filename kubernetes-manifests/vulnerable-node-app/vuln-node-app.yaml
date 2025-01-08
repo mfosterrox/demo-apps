@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: vulnerables
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vulnerable-node-app
+  namespace: vulnerables
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vulnerable-node-app
+  template:
+    metadata:
+      labels:
+        app: vulnerable-node-app
+    spec:
+      containers:
+        - name: vulnerable-node-app
+          image: docker.io/seanrickerd/vuln-node-app
+          command: ["/bin/bash", "-c", "while true; do sleep 1000; done"]
+          stdin: true
+          tty: true
