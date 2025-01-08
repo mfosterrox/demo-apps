@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api-server
+  name: open-api-server
   labels:
     demo: roadshow
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: api-server
+      app: open-api-server
   template:
     metadata:
       labels:
-        app: api-server
+        app: open-api-server
     spec:
       containers:
       - name: ubi

@@ -1,15 +1,14 @@
 ---
-apiVersion: apps/v1
+apiVersion: apps.openshift.io/v1
 kind: Deployment
 metadata:
-  name: frontend
+  name: log4shell
   labels:
     demo: roadshow
 spec:
   replicas: 1
   selector:
-    matchLabels:
-      app: frontend
+    app: frontend
   template:
     metadata:
       labels:
@@ -19,8 +18,33 @@ spec:
       - name: frontend
         image: quay.io/mfoster/vulnerable-demo-applications:log4shell-0.2
         securityContext:
-          allowPrivilegeEscalation: false
+          allowPrivilegeEscalation: true
         ports:
         - containerPort: 80
           name: http
           protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: log4shell-service
+spec:
+  selector:
+    app: frontend
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: log4shell-route
+spec:
+  to:
+    kind: Service
+    name: log4shell-service
+  port:
+    targetPort: 80
+  tls:
+    termination: edge

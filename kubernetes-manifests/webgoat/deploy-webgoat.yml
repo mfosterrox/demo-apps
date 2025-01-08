@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: webgoat
-        image: quay.io/mfoster/vulnerable-demo-applications:webgoat-0.2
+        image: webgoat/webgoat
         ports:
         - containerPort: 8080
         env:
