@@ -1,5 +1,0 @@
-fastapi==0.95.2
-uvicorn==0.22.0
-python-multipart==0.0.6
-async-exit-stack==1.0.1
-async-generator==1.10

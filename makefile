@@ -1,7 +1,7 @@
 # Define variables
 TEAM_NAME := mfoster
 VERSION := 0.1
-APPLICATIONS:= dvwa juice-shop log4shell nodejs-goof-vuln-main patient-portal-acm-skupper-demo rce-exploit rce-http-exploit webgoat
+APPLICATIONS:= dvwa juice-shop log4shell nodejs-goof-vuln-main skupper-demo rce-exploit rce-http-exploit webgoat
 MANIFEST_DIR ?= kubernetes-manifests  
 
 update:
