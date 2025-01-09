@@ -39,21 +39,21 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: frontend
+    app: patient-frontend
     demo: roadshow
-  name: frontend
+  name: patient-frontend
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: frontend
+      app: patient-frontend
   template:
     metadata:
       labels:
-        app: frontend
+        app: patient-frontend
     spec:
       containers:
-        - name: frontend
+        - name: patient-frontend
           image: quay.io/mfoster/vulnerable-demo-applications:patient-portal-acm-demo-0.1
           env:
             - name: DATABASE_SERVICE_HOST
@@ -70,13 +70,13 @@ spec:
 kind: Route
 apiVersion: route.openshift.io/v1
 metadata:
-  name: frontend-patient
+  name: frontend-patient-route
   labels:
-    app: frontend
+    app: patient-frontend
 spec:
   to:
     kind: Service
-    name: frontend
+    name: frontend-service
   port:
     targetPort: 8080
 ---
@@ -84,15 +84,15 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: frontend
-  name: frontend
+    app: patient-frontend
+  name: frontend-service
 spec:
   ports:
   - port: 8080
     protocol: TCP
     targetPort: 8080
   selector:
-    app: frontend
+    app: patient-frontend
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -121,7 +121,7 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: payment-service
+    app: payment-processor
   name: payment-service
 spec:
   ports:
@@ -129,4 +129,4 @@ spec:
     protocol: TCP
     targetPort: 8080
   selector:
-    app: payment-service
+    app: payment-processor

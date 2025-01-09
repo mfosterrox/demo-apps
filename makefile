@@ -19,12 +19,8 @@ build-images:
 	for component in $(APPLICATIONS); do \
 		( cd app-images/$${component}; \
 		  docker buildx build --build-arg TARGETPLATFORM=linux/amd64 -t quay.io/$(TEAM_NAME)/$(REPO_NAME):$${component}-$(VERSION) --push . ; \
-		  ARCHITECTURE=$$(docker inspect quay.io/$(TEAM_NAME)/$(REPO_NAME):$${component}-$(VERSION) | grep '"Architecture"' | head -1 | awk -F'"' '{print $$4}'); \
-		  ARCHITECTURE_OUTPUT="$${ARCHITECTURE_OUTPUT}Built image quay.io/$(TEAM_NAME)/$(REPO_NAME):$${component}-$(VERSION) with architecture: $$ARCHITECTURE\n"; \
 		); \
 	done; \
-	echo "=== Build Summary ==="; \
-	echo -e "$${ARCHITECTURE_OUTPUT}"
 
 push-images:
 	for component in $(APPLICATIONS); do \
