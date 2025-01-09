@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: log4shell
-        image: ghcr.io/christophetd/log4shell-vulnerable-app:latest
+        image: quay.io/mfoster/vulnerable-demo-applications:log4shell-0.3
         securityContext:
           allowPrivilegeEscalation: true
         ports:

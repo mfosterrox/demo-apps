@@ -3,13 +3,13 @@ kind: Deployment
 metadata:
   labels:
     app: database
+    demo: roadshow
   name: database
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: database
-      demo: roadshow
   template:
     metadata:
       labels:
@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: database
-          image: quay.io/skupper/patient-portal-database
+          image: quay.io/mfoster/vulnerable-demo-applications:webgoat-0.3
           ports:
             - containerPort: 5432
 ---

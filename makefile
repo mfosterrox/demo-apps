@@ -1,12 +1,12 @@
 TEAM_NAME := mfoster
 REPO_NAME := vulnerable-demo-applications
-VERSION := 0.2
+VERSION := 0.3
 
 APPLICATIONS:= dvwa juice-shop log4shell nodejs-goof-vuln-main patient-portal-acm-skupper-demo rce-exploit rce-http-exploit webgoat
 
 build-images:
 	for component in $(APPLICATIONS); do \
-		( cd app-images/$${component}; docker build -t quay.io/$(TEAM_NAME)/$(REPO_NAME):$${component} . ); \
+		( cd app-images/$${component}; docker build --platform=linux/amd64 -t quay.io/$(TEAM_NAME)/$(REPO_NAME):$${component} . ); \
 	done
 
 tag-images:
