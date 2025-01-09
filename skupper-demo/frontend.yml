@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: patient-frontend
-          image: quay.io/mfoster/patient-portal-acm-skupper-demo:0.1
+          image: quay.io/skupper/patient-portal-frontend
           imagePullPolicy: Always
           env:
             - name: DATABASE_SERVICE_HOST
