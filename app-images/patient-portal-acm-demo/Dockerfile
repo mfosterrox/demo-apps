@@ -1,11 +1,12 @@
 # Stage 1: Build
-FROM python:3.12-slim AS build
+ARG TARGETPLATFORM
+FROM --platform=$TARGETPLATFORM python:3.12-slim AS build
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Stage 2: Run
-FROM python:alpine AS run
+FROM --platform=$TARGETPLATFORM python:alpine AS run
 
 RUN adduser -S fritz -G root
 USER fritz

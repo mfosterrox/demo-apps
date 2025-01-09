@@ -1,5 +1,6 @@
 #stage 1: installer
-FROM node:20-buster AS installer
+ARG TARGETPLATFORM
+FROM --platform=$TARGETPLATFORM node:20-buster AS installer
 COPY . /juice-shop
 WORKDIR /juice-shop
 RUN npm i -g typescript ts-node
@@ -21,7 +22,7 @@ RUN npm install -g @cyclonedx/cyclonedx-npm@$CYCLONEDX_NPM_VERSION
 RUN npm run sbom
 
 # Stage 2: fix libxml issue
-FROM node:20-buster AS libxmljs-builder
+FROM --platform=$TARGETPLATFORM node:20-buster AS libxmljs-builder
 WORKDIR /juice-shop
 RUN apt-get update && apt-get install -y build-essential python3
 COPY --from=installer /juice-shop/node_modules ./node_modules

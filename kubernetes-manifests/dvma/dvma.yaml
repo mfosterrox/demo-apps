@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: dvma
-          image: quay.io/mfoster/vulnerable-demo-applications:dvwa-0.3
+          image: quay.io/mfoster/vulnerable-demo-applications:dvwa-0.1
           command: ["/bin/bash", "-c", "while true; do sleep 1000; done"]
           stdin: true
           tty: true

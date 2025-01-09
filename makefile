@@ -1,18 +1,30 @@
+# Define variables
 TEAM_NAME := mfoster
 REPO_NAME := vulnerable-demo-applications
-VERSION := 0.3
-
+VERSION := 0.1
 APPLICATIONS:= dvwa juice-shop log4shell nodejs-goof-vuln-main patient-portal-acm-skupper-demo rce-exploit rce-http-exploit webgoat
+MANIFEST_DIR ?= kubernetes-manifests  
+
+update:
+	@echo "Updating image tags in Kubernetes manifests in $(MANIFEST_DIR)"
+	@find $(MANIFEST_DIR) -type f \( -name "*.yaml" -o -name "*.yml" \) | while read -r file; do \
+		echo "Processing $$file"; \
+		sed -E 's|\(quay\.io/mfoster/vulnerable-demo-applications:[^:]*:\)[0-9]+$$|\1$(VERSION)|' $$file; \
+		echo "Updated image tags in $$file"; \
+	done
+	@echo "All relevant manifest files in $(MANIFEST_DIR) have been updated to use version: $(VERSION)"
 
 build-images:
+	@ARCHITECTURE_OUTPUT=""
 	for component in $(APPLICATIONS); do \
-		( cd app-images/$${component}; docker build --platform=linux/amd64 -t quay.io/$(TEAM_NAME)/$(REPO_NAME):$${component} . ); \
-	done
-
-tag-images:
-	for component in $(APPLICATIONS); do \
-		docker tag $(TEAM_NAME)/$(REPO_NAME):$${component} quay.io/$(TEAM_NAME)/$(REPO_NAME):$${component}-$(VERSION); \
-	done
+		( cd app-images/$${component}; \
+		  docker buildx build --build-arg TARGETPLATFORM=linux/amd64 -t quay.io/$(TEAM_NAME)/$(REPO_NAME):$${component}-$(VERSION) --push . ; \
+		  ARCHITECTURE=$$(docker inspect quay.io/$(TEAM_NAME)/$(REPO_NAME):$${component}-$(VERSION) | grep '"Architecture"' | head -1 | awk -F'"' '{print $$4}'); \
+		  ARCHITECTURE_OUTPUT="$${ARCHITECTURE_OUTPUT}Built image quay.io/$(TEAM_NAME)/$(REPO_NAME):$${component}-$(VERSION) with architecture: $$ARCHITECTURE\n"; \
+		); \
+	done; \
+	echo "=== Build Summary ==="; \
+	echo -e "$${ARCHITECTURE_OUTPUT}"
 
 push-images:
 	for component in $(APPLICATIONS); do \
@@ -27,5 +39,4 @@ rm-all-images:
 
 build-tag-and-push:
 	make build-images
-	make tag-images
 	make push-images

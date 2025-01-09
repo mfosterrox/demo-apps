@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: log4shell
-        image: quay.io/mfoster/vulnerable-demo-applications:log4shell-0.3
+        image: quay.io/mfoster/vulnerable-demo-applications:log4shell-0.1
         securityContext:
           allowPrivilegeEscalation: true
         ports:

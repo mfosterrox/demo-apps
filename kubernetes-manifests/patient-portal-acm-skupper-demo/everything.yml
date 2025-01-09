@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: database
-          image: quay.io/mfoster/vulnerable-demo-applications:webgoat-0.3
+          image: quay.io/skupper/patient-portal-database
           ports:
             - containerPort: 5432
 ---
@@ -54,7 +54,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: quay.io/mfoster/vulnerable-demo-applications:patient-portal-acm-demo-0.2
+          image: quay.io/mfoster/vulnerable-demo-applications:patient-portal-acm-demo-0.1
           env:
             - name: DATABASE_SERVICE_HOST
               value: database
