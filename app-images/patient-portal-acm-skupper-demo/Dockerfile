@@ -6,12 +6,12 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Stage 2: Run
-FROM --platform=$TARGETPLATFORM python:alpine AS run
+FROM --platform=$TARGETPLATFORM python:3.12-slim AS run
 
-RUN adduser -S fritz -G root
+RUN useradd -m -s /bin/bash -g root fritz
 USER fritz
 
-COPY --from=build /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
+COPY --from=build /usr/local /usr/local
 COPY --chown=fritz:root static /home/fritz/static
 COPY --chown=fritz:root main.py /home/fritz/main.py
 

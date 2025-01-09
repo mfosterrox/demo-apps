@@ -1,7 +1,7 @@
+uvicorn
 httpx
 psycopg
 psycopg_binary
 psycopg_pool
 starlette
 sse_starlette
-uvicorn

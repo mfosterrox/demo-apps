@@ -1,6 +1,5 @@
 # Define variables
 TEAM_NAME := mfoster
-REPO_NAME := vulnerable-demo-applications
 VERSION := 0.1
 APPLICATIONS:= dvwa juice-shop log4shell nodejs-goof-vuln-main patient-portal-acm-skupper-demo rce-exploit rce-http-exploit webgoat
 MANIFEST_DIR ?= kubernetes-manifests  
@@ -18,13 +17,13 @@ build-images:
 	@ARCHITECTURE_OUTPUT=""
 	for component in $(APPLICATIONS); do \
 		( cd app-images/$${component}; \
-		  docker buildx build --build-arg TARGETPLATFORM=linux/amd64 -t quay.io/$(TEAM_NAME)/$(REPO_NAME):$${component}-$(VERSION) --push . ; \
+		  docker buildx build --build-arg TARGETPLATFORM=linux/amd64 -t quay.io/$(TEAM_NAME)/$${component}:$(VERSION) --push . ; \
 		); \
 	done; \
 
 push-images:
 	for component in $(APPLICATIONS); do \
-		docker push quay.io/$(TEAM_NAME)/$(REPO_NAME):$${component}-$(VERSION); \
+		docker push quay.io/$(TEAM_NAME)/$${component}:$(VERSION); \
 	done
 
 rm-all-containers:
@@ -35,4 +34,3 @@ rm-all-images:
 
 build-tag-and-push:
 	make build-images
-	make push-images
