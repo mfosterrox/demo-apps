@@ -17,7 +17,7 @@ build-images:
 	@ARCHITECTURE_OUTPUT=""
 	for component in $(APPLICATIONS); do \
 		( cd app-images/$${component}; \
-		  docker buildx build --build-arg TARGETPLATFORM=linux/amd64 -t quay.io/$(TEAM_NAME)/$${component}:$(VERSION) --push . ; \
+		  docker buildx build --build-arg TARGETPLATFORM=linux/amd64 -t quay.io/$(TEAM_NAME)/$${component}:$(VERSION) .  ; \
 		); \
 	done; \
 
@@ -34,3 +34,4 @@ rm-all-images:
 
 build-tag-and-push:
 	make build-images
+	make push-images

@@ -1,17 +1,13 @@
-# Stage 1: Build
-ARG TARGETPLATFORM
-FROM --platform=$TARGETPLATFORM python:3.12-slim AS build
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+FROM python:alpine AS build
 
-# Stage 2: Run
-FROM --platform=$TARGETPLATFORM python:3.12-slim AS run
+RUN pip install --no-cache-dir httpx psycopg psycopg_binary psycopg_pool starlette sse_starlette uvicorn
 
-RUN useradd -m -s /bin/bash -g root fritz
+FROM python:alpine AS run
+
+RUN adduser -S fritz -G root
 USER fritz
 
-COPY --from=build /usr/local /usr/local
+COPY --from=build /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
 COPY --chown=fritz:root static /home/fritz/static
 COPY --chown=fritz:root main.py /home/fritz/main.py
 
