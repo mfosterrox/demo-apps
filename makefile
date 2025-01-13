@@ -13,8 +13,16 @@ update:
 	done
 	@echo "All relevant manifest files in $(MANIFEST_DIR) have been updated to use version: $(VERSION)"
 
+build-images:
+	docker buildx create --use
+	for component in $(APPLICATIONS); do \
+		( cd app-images/$${component}; \
+		  docker buildx build --platform linux/amd64,linux/arm64 -t quay.io/$(TEAM_NAME)/$${component}:latest --push --cache-from=type=registry,ref=quay.io/$(TEAM_NAME)/$${component}:cache \
+		  --cache-to=type=registry,ref=quay.io/$(TEAM_NAME)/$${component}:cache,mode=max . ; \
+		); \
+	done; \
+
 build-images-amd:
-	@ARCHITECTURE_OUTPUT=""
 	for component in $(APPLICATIONS); do \
 		( cd app-images/$${component}; \
 		  docker build --build-arg TARGETPLATFORM=linux/amd64 -t quay.io/$(TEAM_NAME)/$${component}-amd64:$(VERSION) . --push ; \

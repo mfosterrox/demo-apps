@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: dvma
-          image: quay.io/mfoster/dvwa-amd64:0.1
+          image: quay.io/mfoster/dvwa:latest
           command: ["/bin/bash", "-c", "while true; do sleep 1000; done"]
           stdin: true
           tty: true

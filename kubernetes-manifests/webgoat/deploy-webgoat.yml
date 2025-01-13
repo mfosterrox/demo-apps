@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: webgoat
-        image: quay.io/mfoster/webgoat-amd64:0.1
+        image: quay.io/mfoster/webgoat:latest
         ports:
         - containerPort: 8080
         env:

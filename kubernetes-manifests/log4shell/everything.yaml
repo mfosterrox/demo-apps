@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: log4shell
-        image: quay.io/mfoster/log4shell-amd64:0.1
+        image: quay.io/mfoster/log4shell:latest
         securityContext:
           allowPrivilegeEscalation: true
         ports:
