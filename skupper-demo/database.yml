@@ -18,6 +18,7 @@ spec:
       containers:
         - name: database
           image: quay.io/skupper/patient-portal-database
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5432
 ---

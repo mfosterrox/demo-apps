@@ -14,7 +14,9 @@ update:
 	@echo "All relevant manifest files in $(MANIFEST_DIR) have been updated to use version: $(VERSION)"
 
 build-images:
-	docker buildx create --use
+	docker buildx ls
+	docker buildx create --use --name mybuilder
+	docker buildx inspect --bootstrap
 	for component in $(APPLICATIONS); do \
 		( cd app-images/$${component}; \
 		  docker buildx build --platform linux/amd64,linux/arm64 -t quay.io/$(TEAM_NAME)/$${component}:latest --push --cache-from=type=registry,ref=quay.io/$(TEAM_NAME)/$${component}:cache \
@@ -22,41 +24,19 @@ build-images:
 		); \
 	done; \
 
-build-images-amd:
-	for component in $(APPLICATIONS); do \
-		( cd app-images/$${component}; \
-		  docker build --build-arg TARGETPLATFORM=linux/amd64 -t quay.io/$(TEAM_NAME)/$${component}-amd64:$(VERSION) . --push ; \
-		); \
-	done; \
-
-build-images-arm:
-	@ARCHITECTURE_OUTPUT=""
-	for component in $(APPLICATIONS); do \
-		( cd app-images/$${component}; \
-		  docker buildx build --build-arg TARGETPLATFORM=linux/arm64 -t quay.io/$(TEAM_NAME)/$${component}-arm64:$(VERSION) . --push ; \
-		); \
-	done; \
-
-push-images-arm:
-	for component in $(APPLICATIONS); do \
-		docker push quay.io/$(TEAM_NAME)/$${component}-arm64:$(VERSION); \
-	done
-
-push-images-amd:
-	for component in $(APPLICATIONS); do \
-		docker push quay.io/$(TEAM_NAME)/$${component}-amd64:$(VERSION); \
-	done
-
 rm-all-containers:
 	docker rm $$(docker ps -a -q)
 
 rm-all-images:
 	docker rmi -f $$(docker images -aq)
 
-build-tag-and-push-arm:
-	make build-images-arm
-	make push-images-arm
+build-tag-and-push:
+	make build-images
+	make push-images
 
-build-tag-and-push-amd:
-	make build-images-amd
-	make push-images-amd
+pull:
+	for component in $(APPLICATIONS); do \
+		( cd app-images/$${component}; \
+		  docker pull quay.io/$(TEAM_NAME)/$${component}:latest \
+		); \
+	done; \
