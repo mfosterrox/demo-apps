@@ -1,6 +1,5 @@
 #stage 1: installer
-ARG TARGETPLATFORM
-FROM --platform=$TARGETPLATFORM node:20-buster AS installer
+FROM node:20-buster AS installer
 COPY . /juice-shop
 WORKDIR /juice-shop
 RUN npm i -g typescript ts-node

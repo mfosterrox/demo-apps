@@ -1,7 +1,7 @@
 # Define variables
 TEAM_NAME := mfoster
 VERSION := 0.1
-APPLICATIONS:= dvwa juice-shop log4shell nodejs-goof-vuln-main rce-exploit rce-http-exploit webgoat frontend payment-processor database test
+APPLICATIONS:= dvwa juice-shop log4shell nodejs-goof-vuln-main rce-exploit rce-http-exploit webgoat frontend payment-processor database
 MANIFEST_DIR ?= kubernetes-manifests  
 
 update:
@@ -13,17 +13,30 @@ update:
 	done
 	@echo "All relevant manifest files in $(MANIFEST_DIR) have been updated to use version: $(VERSION)"
 
-build-images:
+build-images-amd:
 	@ARCHITECTURE_OUTPUT=""
 	for component in $(APPLICATIONS); do \
 		( cd app-images/$${component}; \
-		  docker buildx build --build-arg TARGETPLATFORM=linux/amd64 -t quay.io/$(TEAM_NAME)/$${component}:$(VERSION) .  ; \
+		  docker build --build-arg TARGETPLATFORM=linux/amd64 -t quay.io/$(TEAM_NAME)/$${component}-amd64:$(VERSION) . --push ; \
 		); \
 	done; \
 
-push-images:
+build-images-arm:
+	@ARCHITECTURE_OUTPUT=""
 	for component in $(APPLICATIONS); do \
-		docker push quay.io/$(TEAM_NAME)/$${component}:$(VERSION); \
+		( cd app-images/$${component}; \
+		  docker buildx build --build-arg TARGETPLATFORM=linux/arm64 -t quay.io/$(TEAM_NAME)/$${component}-arm64:$(VERSION) . --push ; \
+		); \
+	done; \
+
+push-images-arm:
+	for component in $(APPLICATIONS); do \
+		docker push quay.io/$(TEAM_NAME)/$${component}-arm64:$(VERSION); \
+	done
+
+push-images-amd:
+	for component in $(APPLICATIONS); do \
+		docker push quay.io/$(TEAM_NAME)/$${component}-amd64:$(VERSION); \
 	done
 
 rm-all-containers:
@@ -32,6 +45,10 @@ rm-all-containers:
 rm-all-images:
 	docker rmi -f $$(docker images -aq)
 
-build-tag-and-push:
-	make build-images
-	make push-images
+build-tag-and-push-arm:
+	make build-images-arm
+	make push-images-arm
+
+build-tag-and-push-amd:
+	make build-images-amd
+	make push-images-amd

@@ -41,6 +41,7 @@ async def startup():
 
     global pool
     pool = AsyncConnectionPool(database_url, configure=configure, check=AsyncConnectionPool.check_connection)
+    await pool.open()  # Explicitly open the pool
 
     global change_event
     change_event = asyncio.Event()
@@ -49,7 +50,7 @@ async def startup():
         while True:
             try:
                 async with pool.connection() as conn:
-                    await conn.execute("listen changes")
+                    await conn.execute("LISTEN changes")  # Ensure the channel is in uppercase as required by Postgres
 
                     async for notify in conn.notifies():
                         change_event.set()
@@ -57,7 +58,7 @@ async def startup():
             except KeyboardInterrupt:
                 raise
             except Exception as e:
-                print(str(e))
+                print(f"Error in listen loop: {str(e)}")
 
             await asyncio.sleep(1)
 

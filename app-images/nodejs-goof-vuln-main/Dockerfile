@@ -1,6 +1,5 @@
 # FROM node:6-stretch
-ARG TARGETPLATFORM
-FROM --platform=$TARGETPLATFORM node:18.13.0
+FROM node:18.13.0
 
 RUN mkdir /usr/src/goof
 RUN mkdir /tmp/extracted_files

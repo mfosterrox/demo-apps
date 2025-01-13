@@ -1,6 +1,5 @@
 # Base image: Debian with Node.js installed
-ARG TARGETPLATFORM
-FROM --platform=$TARGETPLATFORM debian:bookworm-slim
+FROM debian:bookworm-slim
 # Set environment variables for Node.js and Yarn versions
 ENV NODE_VERSION=22.12.0
 ENV YARN_VERSION=1.22.22

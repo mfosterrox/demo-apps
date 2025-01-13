@@ -1,6 +1,6 @@
 FROM python:3.12-alpine AS build
 
-RUN pip install --no-cache-dir uvicorn httpx psycopg psycopg_binary psycopg_pool starlette sse_starlette 
+RUN pip install --no-cache-dir httpx psycopg psycopg_binary psycopg_pool starlette sse_starlette uvicorn
 
 FROM python:3.12-alpine AS run
 
