@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ocp-struts2
+  labels:
+    app: ocp-struts2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ocp-struts2
+  template:
+    metadata:
+      labels:
+        app: ocp-struts2
+    spec:
+      containers:
+      - name: ocp-struts2
+        image: quay.io/rh_ee_srickerd/ocp-struts2
+        ports:
+        - containerPort: 8080
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: ocp-struts2
+  labels:
+    app: ocp-struts2
+spec:
+  ipFamilies:
+    - IPv4
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  internalTrafficPolicy: Cluster
+  selector:
+    app: ocp-struts2
+
+---
+
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: ocp-struts2
+  labels:
+    run: ocp-struts2
+spec:
+  to:
+    kind: Service
+    name: ocp-struts2
+    weight: 100
+  port:
+    targetPort: 8080
+  tls:
+    termination: edge
+  wildcardPolicy: None
