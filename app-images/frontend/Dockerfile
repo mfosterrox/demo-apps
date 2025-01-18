@@ -2,6 +2,12 @@ FROM python:3.12-alpine AS build
 
 RUN pip install --no-cache-dir httpx psycopg psycopg_binary psycopg_pool starlette sse_starlette uvicorn
 
+RUN pip install --no-cache-dir setuptools==39.1.0
+RUN pip install --no-cache-dir Flask==0.5
+RUN pip install --no-cache-dir Django==1.11.29
+RUN pip install --no-cache-dir requests==2.19.0
+RUN pip install --no-cache-dir PyYAML==3.12
+
 FROM python:3.12-alpine AS run
 
 RUN adduser -S fritz -G root
