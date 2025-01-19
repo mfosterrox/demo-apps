@@ -6,6 +6,7 @@ metadata:
     app: payment-processor
     demo: roadshow
   name: payment-processor
+  namespace: patient-portal
 spec:
   replicas: 3
   selector:
@@ -28,6 +29,7 @@ metadata:
   labels:
     app: payment-processor
   name: payment-service
+  namespace: patient-portal
 spec:
   ports:
   - port: 8080

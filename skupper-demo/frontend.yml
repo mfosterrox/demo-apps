@@ -6,6 +6,7 @@ metadata:
     app: patient-frontend
     demo: roadshow
   name: patient-frontend
+  namespace: patient-portal
 spec:
   replicas: 3
   selector:
@@ -36,6 +37,7 @@ kind: Route
 apiVersion: route.openshift.io/v1
 metadata:
   name: frontend-patient-route
+  namespace: patient-portal
   labels:
     app: patient-frontend
 spec:
@@ -51,6 +53,7 @@ metadata:
   labels:
     app: patient-frontend
   name: frontend-service
+  namespace: patient-portal
 spec:
   ports:
   - port: 8080
