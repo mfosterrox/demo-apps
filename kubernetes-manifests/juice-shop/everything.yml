@@ -37,7 +37,7 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 3000
-  type: NodePort
+  type: ClusterIP
 ---
 apiVersion: route.openshift.io/v1
 kind: Route
@@ -52,3 +52,4 @@ spec:
   tls:
     termination: edge
   wildcardPolicy: None
+
