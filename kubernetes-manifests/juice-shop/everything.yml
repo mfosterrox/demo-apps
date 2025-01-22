@@ -18,7 +18,10 @@ spec:
       - name: juice-shop
         image: quay.io/mfoster/juice-shop:latest
         ports:
-        - containerPort: 3000
+          - containerPort: 3000
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
         env:
         - name: NODE_ENV
           value: production
@@ -34,6 +37,7 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 3000
+  type: NodePort
 ---
 apiVersion: route.openshift.io/v1
 kind: Route
@@ -45,3 +49,6 @@ spec:
     name: juice-shop
   port:
     targetPort: 80
+  tls:
+    termination: edge
+  wildcardPolicy: None
