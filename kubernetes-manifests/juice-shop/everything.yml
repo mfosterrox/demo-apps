@@ -2,8 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: juice-shop
-  labels: 
-    demo: roadshow
+  labels:
+    app: juice-shop
 spec:
   replicas: 1
   selector:
@@ -15,16 +15,23 @@ spec:
         app: juice-shop
     spec:
       containers:
-      - name: juice-shop
-        image: bkimminich/juice-shop
-        ports:
-          - containerPort: 3000
-        securityContext:
-          runAsNonRoot: true
-          allowPrivilegeEscalation: false
-        env:
-        - name: NODE_ENV
-          value: production
+        - name: juice-shop
+          image: bkimminich/juice-shop:latest
+          ports:
+            - containerPort: 3000
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+          env:
+            - name: NODE_ENV
+              value: "production"
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
 ---
 apiVersion: v1
 kind: Service
@@ -52,4 +59,5 @@ spec:
   tls:
     termination: edge
   wildcardPolicy: None
+
 
