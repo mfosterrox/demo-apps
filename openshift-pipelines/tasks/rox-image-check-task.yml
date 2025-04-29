@@ -31,6 +31,8 @@ spec:
             secretKeyRef:
               name: $(params.rox_central_endpoint)
               key: rox_central_endpoint
+        - name: GRPC_ENFORCE_ALPN_ENABLED
+          value: "FALSE"              
       script: |
         #!/usr/bin/env bash
         set +x

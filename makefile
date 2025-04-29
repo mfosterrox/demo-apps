@@ -15,7 +15,7 @@ update:
 
 build-images:
 	docker buildx ls
-	docker buildx create --use --name mybuilder
+	docker buildx use mybuilder
 	docker buildx inspect --bootstrap
 	for component in $(APPLICATIONS); do \
 		( cd app-images/$${component}; \
