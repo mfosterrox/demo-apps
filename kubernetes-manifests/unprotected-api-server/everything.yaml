@@ -1,7 +1,13 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: unprotected-api-server
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: open-api-server
+  namespace: unprotected-api-server
   labels:
     demo: roadshow
 spec:

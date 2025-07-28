@@ -1,8 +1,14 @@
 ---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: log4shell
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: log4shell
+  namespace: log4shell
   labels:
     demo: roadshow
 spec:
@@ -29,6 +35,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: log4shell-service
+  namespace: log4shell
 spec:
   selector:
     app: log4shell
@@ -41,6 +48,7 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: log4shell-route
+  namespace: log4shell
 spec:
   to:
     kind: Service
