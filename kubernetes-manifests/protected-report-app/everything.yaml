@@ -29,12 +29,13 @@ spec:
           capabilities:
             drop:
               - ALL
-            add:
-              - NET_RAW
-        ports:
-        - containerPort: 80
-          name: http
-          protocol: TCP
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy

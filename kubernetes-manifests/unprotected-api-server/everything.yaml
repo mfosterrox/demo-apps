@@ -22,15 +22,12 @@ spec:
     spec:
       containers:
       - name: ubi
-        image: redhat/ubi8
-        command: [ "/bin/bash", "-c", "--" ]
-        args: [ "while true; do sleep 30; done;" ]
+        image: redhat/ubi8:latest
+        command: ["/bin/bash", "-c", "--"]
+        args: ["while true; do sleep 30; done;"]
         securityContext:
           allowPrivilegeEscalation: false
           readonlyRootFilesystem: true
-          capabilities:
-            add: 
-              - SYS_ADMIN
         env:
         - name: DB_PASSWORD_SECRET
           value: "SECRET"
@@ -38,3 +35,10 @@ spec:
         - containerPort: 80
           name: http
           protocol: TCP
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
