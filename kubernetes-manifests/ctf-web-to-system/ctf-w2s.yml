@@ -15,7 +15,7 @@ spec:
     - protocol: TCP
       port: 80 
       targetPort: 9090  
-  type: LoadBalancer
+  type: ClusterIP
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -42,3 +42,20 @@ spec:
         image: quay.io/mfoster/ctf-web-to-system:latest
         ports:
         - containerPort: 9090
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: ctf-web-to-system
+  namespace: ctf-web-to-system
+  labels:
+    app: ctf-web-to-system
+spec:
+  to:
+    kind: Service
+    name: ctf-web-to-system-service
+  port:
+    targetPort: 80
+  tls:
+    termination: edge
+  wildcardPolicy: None
