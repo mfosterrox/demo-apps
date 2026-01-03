@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: vulnerable-node-app
-          image: docker.io/seanrickerd/vuln-node-app
+          image: quay.io/mfoster/nodejs-goof-vuln-main:latest
           command: ["/bin/bash", "-c", "while true; do sleep 1000; done"]
           stdin: true
           tty: true

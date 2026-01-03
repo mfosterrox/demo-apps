@@ -1,7 +1,7 @@
 # Define variables
 TEAM_NAME := mfoster
-VERSION := 0.1
-APPLICATIONS:= dvwa juice-shop log4shell nodejs-goof-vuln-main rce-exploit rce-http-exploit webgoat frontend payment-processor database
+VERSION := 0.2
+APPLICATIONS:= dvwa dvwa-hummingbird frontend juice-shop log4shell nodejs-goof-vuln-main payment-processor rce-exploit rce-http-exploit webgoat
 MANIFEST_DIR ?= kubernetes-manifests  
 
 update:
@@ -14,48 +14,274 @@ update:
 	@echo "All relevant manifest files in $(MANIFEST_DIR) have been updated to use version: $(VERSION)"
 
 build-images:
-	docker buildx ls
-	docker buildx use mybuilder
-	docker buildx inspect --bootstrap
+	@echo "========================================================="
+	@echo "Starting build process for all applications..."
+	@echo "========================================================="
+	@SUCCESSFUL_BUILDS=""; \
+	FAILED_BUILDS=""; \
+	SKIPPED_BUILDS=""; \
+	TOTAL=0; \
+	SUCCESS=0; \
+	FAILED=0; \
+	SKIPPED=0; \
 	for component in $(APPLICATIONS); do \
-		( cd app-images/$${component}; \
-	  	docker buildx build --platform linux/amd64,linux/arm64 \
-	  	-t quay.io/$(TEAM_NAME)/$(COMPONENT):latest --push \
-	  	--cache-from=type=registry,ref=quay.io/$(TEAM_NAME)/$(COMPONENT):cache \
-	  	--cache-to=type=registry,ref=quay.io/$(TEAM_NAME)/$(COMPONENT):cache,mode=max . ; \
-		); \
+		TOTAL=$$((TOTAL + 1)); \
 	done; \
+	TOTAL_COUNT=$$TOTAL; \
+	TOTAL=0; \
+	for component in $(APPLICATIONS); do \
+		TOTAL=$$((TOTAL + 1)); \
+		echo ""; \
+		IMAGE_NAME="quay.io/$(TEAM_NAME)/$${component}:latest"; \
+		if podman image exists $$IMAGE_NAME >/dev/null 2>&1; then \
+			SKIPPED=$$((SKIPPED + 1)); \
+			SKIPPED_BUILDS="$$SKIPPED_BUILDS $$component"; \
+			echo "⊘ Skipping $$component ($$TOTAL/$$TOTAL_COUNT) - image already exists locally"; \
+			echo "  Image: $$IMAGE_NAME"; \
+		else \
+			echo "Building $$component ($$TOTAL/$$TOTAL_COUNT)..."; \
+			if [ "$$component" = "juice-shop" ]; then \
+				PLATFORM="linux/amd64"; \
+				echo "  Note: Building juice-shop for AMD64 only (ARM64 builds are problematic)"; \
+			else \
+				PLATFORM="linux/amd64,linux/arm64"; \
+			fi; \
+			if ( cd app-images/$${component}; \
+				podman build --platform $$PLATFORM \
+				-t $$IMAGE_NAME . ); then \
+				SUCCESS=$$((SUCCESS + 1)); \
+				SUCCESSFUL_BUILDS="$$SUCCESSFUL_BUILDS $$component"; \
+				echo "✓ Successfully built $$component"; \
+			else \
+				FAILED=$$((FAILED + 1)); \
+				FAILED_BUILDS="$$FAILED_BUILDS $$component"; \
+				echo "✗ Failed to build $$component"; \
+			fi; \
+		fi; \
+	done; \
+	echo ""; \
+	echo "========================================================="; \
+	echo "Build Summary"; \
+	echo "========================================================="; \
+	echo "Total components processed: $$TOTAL"; \
+	echo "Successful builds: $$SUCCESS"; \
+	echo "Skipped (already exist): $$SKIPPED"; \
+	echo "Failed builds: $$FAILED"; \
+	echo ""; \
+	if [ -n "$$SUCCESSFUL_BUILDS" ]; then \
+		echo "✓ Successfully built:"; \
+		for component in $$SUCCESSFUL_BUILDS; do \
+			echo "  - $$component"; \
+		done; \
+		echo ""; \
+	fi; \
+	if [ -n "$$SKIPPED_BUILDS" ]; then \
+		echo "⊘ Skipped (already exist):"; \
+		for component in $$SKIPPED_BUILDS; do \
+			echo "  - $$component"; \
+		done; \
+		echo ""; \
+	fi; \
+	if [ -n "$$FAILED_BUILDS" ]; then \
+		echo "✗ Failed builds:"; \
+		for component in $$FAILED_BUILDS; do \
+			echo "  - $$component"; \
+		done; \
+		echo ""; \
+	fi; \
+	echo "========================================================="; \
+	if [ $$FAILED -gt 0 ]; then \
+		echo "Build completed with errors. Some builds failed."; \
+		exit 1; \
+	else \
+		echo "All builds completed successfully!"; \
+	fi
 
 build:
 	@if [ -z "$(COMPONENT)" ]; then \
-		echo "Error: Please specify a COMPONENT to build (e.g., make build-image COMPONENT=example)."; \
+		echo "Error: Please specify a COMPONENT to build (e.g., make build COMPONENT=example)."; \
 		exit 1; \
 	fi
-	@if ! docker buildx inspect mybuilder > /dev/null 2>&1; then \
-		echo "Creating builder instance 'mybuilder'."; \
-		docker buildx create --use --name mybuilder; \
+	@IMAGE_NAME="quay.io/$(TEAM_NAME)/$(COMPONENT):latest"; \
+	if podman image exists $$IMAGE_NAME >/dev/null 2>&1; then \
+		echo "========================================================="; \
+		echo "Image already exists locally: $(COMPONENT)"; \
+		echo "========================================================="; \
+		echo "⊘ Skipping build - image already exists"; \
+		echo "Image: $$IMAGE_NAME"; \
+		echo "========================================================="; \
 	else \
-		echo "Using existing builder instance 'mybuilder'."; \
+		echo "========================================================="; \
+		echo "Building component: $(COMPONENT)"; \
+		echo "========================================================="; \
+		if [ "$(COMPONENT)" = "juice-shop" ]; then \
+			PLATFORM="linux/amd64"; \
+			echo "  Note: Building juice-shop for AMD64 only (ARM64 builds are problematic)"; \
+		else \
+			PLATFORM="linux/amd64,linux/arm64"; \
+		fi; \
+		if ( cd app-images/$(COMPONENT); \
+			podman build --platform $$PLATFORM \
+			-t $$IMAGE_NAME . ); then \
+			echo ""; \
+			echo "========================================================="; \
+			echo "✓ Successfully built $(COMPONENT)"; \
+			echo "Image: $$IMAGE_NAME"; \
+			echo "========================================================="; \
+		else \
+			echo ""; \
+			echo "========================================================="; \
+			echo "✗ Failed to build $(COMPONENT)"; \
+			echo "========================================================="; \
+			exit 1; \
+		fi; \
 	fi
-	docker buildx inspect --bootstrap
-	cd app-images/$(COMPONENT); \
-	docker buildx build --platform linux/amd64,linux/arm64 \
-	-t quay.io/$(TEAM_NAME)/$(COMPONENT):latest --push . ;
 
 
 rm-all-containers:
-	docker rm $$(docker ps -a -q)
+	podman rm $$(podman ps -a -q)
 
 rm-all-images:
-	docker rmi -f $$(docker images -aq)
+	podman rmi -f $$(podman images -aq)
 
 build-tag-and-push:
 	make build-images
 	make push-images
 
 pull:
+	@echo "========================================================="
+	@echo "Starting pull process for all applications..."
+	@echo "========================================================="
+	@SUCCESSFUL_PULLS=""; \
+	FAILED_PULLS=""; \
+	TOTAL=0; \
+	SUCCESS=0; \
+	FAILED=0; \
 	for component in $(APPLICATIONS); do \
-		( cd app-images/$${component}; \
-		  docker pull quay.io/$(TEAM_NAME)/$${component}:latest \
-		); \
+		TOTAL=$$((TOTAL + 1)); \
 	done; \
+	TOTAL_COUNT=$$TOTAL; \
+	TOTAL=0; \
+	for component in $(APPLICATIONS); do \
+		TOTAL=$$((TOTAL + 1)); \
+		echo ""; \
+		echo "Pulling $$component ($$TOTAL/$$TOTAL_COUNT)..."; \
+		if podman pull quay.io/$(TEAM_NAME)/$${component}:latest; then \
+			SUCCESS=$$((SUCCESS + 1)); \
+			SUCCESSFUL_PULLS="$$SUCCESSFUL_PULLS $$component"; \
+			echo "✓ Successfully pulled $$component"; \
+		else \
+			FAILED=$$((FAILED + 1)); \
+			FAILED_PULLS="$$FAILED_PULLS $$component"; \
+			echo "✗ Failed to pull $$component"; \
+		fi; \
+	done; \
+	echo ""; \
+	echo "========================================================="; \
+	echo "Pull Summary"; \
+	echo "========================================================="; \
+	echo "Total pulls attempted: $$TOTAL"; \
+	echo "Successful pulls: $$SUCCESS"; \
+	echo "Failed pulls: $$FAILED"; \
+	echo ""; \
+	if [ -n "$$SUCCESSFUL_PULLS" ]; then \
+		echo "✓ Successful pulls:"; \
+		for component in $$SUCCESSFUL_PULLS; do \
+			echo "  - $$component"; \
+		done; \
+		echo ""; \
+	fi; \
+	if [ -n "$$FAILED_PULLS" ]; then \
+		echo "✗ Failed pulls:"; \
+		for component in $$FAILED_PULLS; do \
+			echo "  - $$component"; \
+		done; \
+		echo ""; \
+	fi; \
+	echo "========================================================="; \
+	if [ $$FAILED -gt 0 ]; then \
+		echo "Pull completed with errors. Some pulls failed."; \
+		exit 1; \
+	else \
+		echo "All pulls completed successfully!"; \
+	fi
+
+push-images:
+	@echo "========================================================="
+	@echo "Starting push process for all applications..."
+	@echo "========================================================="
+	@SUCCESSFUL_PUSHES=""; \
+	FAILED_PUSHES=""; \
+	TOTAL=0; \
+	SUCCESS=0; \
+	FAILED=0; \
+	for component in $(APPLICATIONS); do \
+		TOTAL=$$((TOTAL + 1)); \
+	done; \
+	TOTAL_COUNT=$$TOTAL; \
+	TOTAL=0; \
+	for component in $(APPLICATIONS); do \
+		TOTAL=$$((TOTAL + 1)); \
+		echo ""; \
+		echo "Pushing $$component ($$TOTAL/$$TOTAL_COUNT)..."; \
+		if podman push quay.io/$(TEAM_NAME)/$${component}:latest; then \
+			SUCCESS=$$((SUCCESS + 1)); \
+			SUCCESSFUL_PUSHES="$$SUCCESSFUL_PUSHES $$component"; \
+			echo "✓ Successfully pushed $$component"; \
+		else \
+			FAILED=$$((FAILED + 1)); \
+			FAILED_PUSHES="$$FAILED_PUSHES $$component"; \
+			echo "✗ Failed to push $$component"; \
+		fi; \
+	done; \
+	echo ""; \
+	echo "========================================================="; \
+	echo "Push Summary"; \
+	echo "========================================================="; \
+	echo "Total pushes attempted: $$TOTAL"; \
+	echo "Successful pushes: $$SUCCESS"; \
+	echo "Failed pushes: $$FAILED"; \
+	echo ""; \
+	if [ -n "$$SUCCESSFUL_PUSHES" ]; then \
+		echo "✓ Successful pushes:"; \
+		for component in $$SUCCESSFUL_PUSHES; do \
+			echo "  - $$component"; \
+		done; \
+		echo ""; \
+	fi; \
+	if [ -n "$$FAILED_PUSHES" ]; then \
+		echo "✗ Failed pushes:"; \
+		for component in $$FAILED_PUSHES; do \
+			echo "  - $$component"; \
+		done; \
+		echo ""; \
+	fi; \
+	echo "========================================================="; \
+	if [ $$FAILED -gt 0 ]; then \
+		echo "Push completed with errors. Some pushes failed."; \
+		exit 1; \
+	else \
+		echo "All pushes completed successfully!"; \
+	fi
+
+push:
+	@if [ -z "$(COMPONENT)" ]; then \
+		echo "Error: Please specify a COMPONENT to push (e.g., make push COMPONENT=example)."; \
+		exit 1; \
+	fi
+	@echo "========================================================="
+	@echo "Pushing component: $(COMPONENT)"
+	@echo "========================================================="
+	@if podman push quay.io/$(TEAM_NAME)/$(COMPONENT):latest; then \
+		echo ""; \
+		echo "========================================================="; \
+		echo "✓ Successfully pushed $(COMPONENT)"; \
+		echo "Image: quay.io/$(TEAM_NAME)/$(COMPONENT):latest"; \
+		echo "========================================================="; \
+	else \
+		echo ""; \
+		echo "========================================================="; \
+		echo "✗ Failed to push $(COMPONENT)"; \
+		echo "========================================================="; \
+		exit 1; \
+	fi

@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name: reporting
-        image: quay.io/rhacs-misc/log4shell-minimal:1.2
+        image: quay.io/mfoster/log4shell:latest
         securityContext:
           allowPrivilegeEscalation: false
           readonlyRootFilesystem: true

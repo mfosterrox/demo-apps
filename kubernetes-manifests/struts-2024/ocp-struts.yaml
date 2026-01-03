@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name: ocp-struts2
-        image: quay.io/rh_ee_srickerd/ocp-struts2
+        image: quay.io/mfoster/struts-cve-2024-53677:latest
         ports:
         - containerPort: 8080
 
