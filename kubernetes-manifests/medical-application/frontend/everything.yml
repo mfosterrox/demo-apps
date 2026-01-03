@@ -159,7 +159,9 @@ spec:
        app: wordpress
     spec:
       securityContext:
-        fsGroup: 33
+        fsGroup: 0
+        runAsUser: 0
+        runAsNonRoot: false
       containers:
       - image: wordpress:latest
         imagePullPolicy: Always
@@ -176,6 +178,14 @@ spec:
           value: "wordpress"
         - name: WORDPRESS_DB_NAME
           value: "wordpress"
+        securityContext:
+          allowPrivilegeEscalation: true
+          privileged: true
+          runAsUser: 0
+          runAsNonRoot: false
+          capabilities:
+            add:
+            - ALL
         readinessProbe:
           httpGet:
             path: /
