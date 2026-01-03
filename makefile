@@ -32,7 +32,7 @@ build-images:
 	for component in $(APPLICATIONS); do \
 		TOTAL=$$((TOTAL + 1)); \
 		echo ""; \
-		IMAGE_NAME="quay.io/$(TEAM_NAME)/$${component}:latest"; \
+		IMAGE_NAME="quay.io/$(TEAM_NAME)/$${component}:$(VERSION)"; \
 		if podman image exists $$IMAGE_NAME >/dev/null 2>&1; then \
 			SKIPPED=$$((SKIPPED + 1)); \
 			SKIPPED_BUILDS="$$SKIPPED_BUILDS $$component"; \
@@ -40,16 +40,7 @@ build-images:
 			echo "  Image: $$IMAGE_NAME"; \
 		else \
 			echo "Building $$component ($$TOTAL/$$TOTAL_COUNT)..."; \
-			if [ "$$component" = "juice-shop" ] || [ "$$component" = "ctf-web-to-system" ]; then \
-				PLATFORM="linux/amd64"; \
-				if [ "$$component" = "juice-shop" ]; then \
-					echo "  Note: Building juice-shop for AMD64 only (ARM64 builds are problematic)"; \
-				else \
-					echo "  Note: Building ctf-web-to-system for AMD64 only (ARM64 builds are problematic)"; \
-				fi; \
-			else \
-				PLATFORM="linux/amd64,linux/arm64"; \
-			fi; \
+			PLATFORM="linux/amd64"; \
 			if ( cd app-images/$${component}; \
 				podman build --platform $$PLATFORM \
 				-t $$IMAGE_NAME . ); then \
@@ -106,7 +97,7 @@ build:
 		echo "Error: Please specify a COMPONENT to build (e.g., make build COMPONENT=example)."; \
 		exit 1; \
 	fi
-	@IMAGE_NAME="quay.io/$(TEAM_NAME)/$(COMPONENT):latest"; \
+	@IMAGE_NAME="quay.io/$(TEAM_NAME)/$(COMPONENT):$(VERSION)"; \
 	if podman image exists $$IMAGE_NAME >/dev/null 2>&1; then \
 		echo "========================================================="; \
 		echo "Image already exists locally: $(COMPONENT)"; \
@@ -118,16 +109,7 @@ build:
 		echo "========================================================="; \
 		echo "Building component: $(COMPONENT)"; \
 		echo "========================================================="; \
-		if [ "$(COMPONENT)" = "juice-shop" ] || [ "$(COMPONENT)" = "ctf-web-to-system" ]; then \
-			PLATFORM="linux/amd64"; \
-			if [ "$(COMPONENT)" = "juice-shop" ]; then \
-				echo "  Note: Building juice-shop for AMD64 only (ARM64 builds are problematic)"; \
-			else \
-				echo "  Note: Building ctf-web-to-system for AMD64 only (ARM64 builds are problematic)"; \
-			fi; \
-		else \
-			PLATFORM="linux/amd64,linux/arm64"; \
-		fi; \
+		PLATFORM="linux/amd64"; \
 		if ( cd app-images/$(COMPONENT); \
 			podman build --platform $$PLATFORM \
 			-t $$IMAGE_NAME . ); then \
@@ -174,7 +156,7 @@ pull:
 		TOTAL=$$((TOTAL + 1)); \
 		echo ""; \
 		echo "Pulling $$component ($$TOTAL/$$TOTAL_COUNT)..."; \
-		if podman pull quay.io/$(TEAM_NAME)/$${component}:latest; then \
+		if podman pull quay.io/$(TEAM_NAME)/$${component}:$(VERSION); then \
 			SUCCESS=$$((SUCCESS + 1)); \
 			SUCCESSFUL_PULLS="$$SUCCESSFUL_PULLS $$component"; \
 			echo "✓ Successfully pulled $$component"; \
@@ -232,7 +214,7 @@ push-images:
 		TOTAL=$$((TOTAL + 1)); \
 		echo ""; \
 		echo "Pushing $$component ($$TOTAL/$$TOTAL_COUNT)..."; \
-		if podman push quay.io/$(TEAM_NAME)/$${component}:latest; then \
+		if podman push quay.io/$(TEAM_NAME)/$${component}:$(VERSION); then \
 			SUCCESS=$$((SUCCESS + 1)); \
 			SUCCESSFUL_PUSHES="$$SUCCESSFUL_PUSHES $$component"; \
 			echo "✓ Successfully pushed $$component"; \
@@ -280,11 +262,11 @@ push:
 	@echo "========================================================="
 	@echo "Pushing component: $(COMPONENT)"
 	@echo "========================================================="
-	@if podman push quay.io/$(TEAM_NAME)/$(COMPONENT):latest; then \
+	@if podman push quay.io/$(TEAM_NAME)/$(COMPONENT):$(VERSION); then \
 		echo ""; \
 		echo "========================================================="; \
 		echo "✓ Successfully pushed $(COMPONENT)"; \
-		echo "Image: quay.io/$(TEAM_NAME)/$(COMPONENT):latest"; \
+		echo "Image: quay.io/$(TEAM_NAME)/$(COMPONENT):$(VERSION)"; \
 		echo "========================================================="; \
 	else \
 		echo ""; \
