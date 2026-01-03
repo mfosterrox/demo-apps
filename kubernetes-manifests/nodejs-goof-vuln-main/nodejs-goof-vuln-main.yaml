@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: nodejs-goof-vuln-main
-          image: quay.io/mfoster/nodejs-goof-vuln-main:latest
+          image: quay.io/mfoster/nodejs-goof-vuln-main:0.2
           command: ["/bin/bash", "-c", "while true; do sleep 1000; done"]
           stdin: true
           tty: true

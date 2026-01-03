@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: dvwa
-          image: quay.io/mfoster/dvwa:latest
+          image: quay.io/mfoster/dvwa:0.2
           command: ["/bin/bash", "-c", "while true; do sleep 1000; done"]
           stdin: true
           tty: true
