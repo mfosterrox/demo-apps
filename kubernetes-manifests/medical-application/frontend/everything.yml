@@ -158,6 +158,8 @@ spec:
      labels:
        app: wordpress
     spec:
+      securityContext:
+        fsGroup: 33
       containers:
       - image: wordpress:latest
         imagePullPolicy: Always
@@ -165,6 +167,27 @@ spec:
         ports:
         - containerPort: 80
           protocol: TCP
+        env:
+        - name: WORDPRESS_DB_HOST
+          value: "localhost"
+        - name: WORDPRESS_DB_USER
+          value: "wordpress"
+        - name: WORDPRESS_DB_PASSWORD
+          value: "wordpress"
+        - name: WORDPRESS_DB_NAME
+          value: "wordpress"
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10
 
 ---
 

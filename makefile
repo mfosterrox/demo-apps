@@ -1,7 +1,7 @@
 # Define variables
 TEAM_NAME := mfoster
 VERSION := 0.2
-APPLICATIONS:= dvwa dvwa-hummingbird frontend juice-shop log4shell nodejs-goof-vuln-main payment-processor rce-exploit rce-http-exploit webgoat
+APPLICATIONS:= ctf-web-to-system dvwa dvwa-hummingbird frontend juice-shop log4shell nodejs-goof-vuln-main payment-processor rce-exploit rce-http-exploit webgoat
 MANIFEST_DIR ?= kubernetes-manifests  
 
 update:
@@ -40,9 +40,13 @@ build-images:
 			echo "  Image: $$IMAGE_NAME"; \
 		else \
 			echo "Building $$component ($$TOTAL/$$TOTAL_COUNT)..."; \
-			if [ "$$component" = "juice-shop" ]; then \
+			if [ "$$component" = "juice-shop" ] || [ "$$component" = "ctf-web-to-system" ]; then \
 				PLATFORM="linux/amd64"; \
-				echo "  Note: Building juice-shop for AMD64 only (ARM64 builds are problematic)"; \
+				if [ "$$component" = "juice-shop" ]; then \
+					echo "  Note: Building juice-shop for AMD64 only (ARM64 builds are problematic)"; \
+				else \
+					echo "  Note: Building ctf-web-to-system for AMD64 only (ARM64 builds are problematic)"; \
+				fi; \
 			else \
 				PLATFORM="linux/amd64,linux/arm64"; \
 			fi; \
@@ -114,9 +118,13 @@ build:
 		echo "========================================================="; \
 		echo "Building component: $(COMPONENT)"; \
 		echo "========================================================="; \
-		if [ "$(COMPONENT)" = "juice-shop" ]; then \
+		if [ "$(COMPONENT)" = "juice-shop" ] || [ "$(COMPONENT)" = "ctf-web-to-system" ]; then \
 			PLATFORM="linux/amd64"; \
-			echo "  Note: Building juice-shop for AMD64 only (ARM64 builds are problematic)"; \
+			if [ "$(COMPONENT)" = "juice-shop" ]; then \
+				echo "  Note: Building juice-shop for AMD64 only (ARM64 builds are problematic)"; \
+			else \
+				echo "  Note: Building ctf-web-to-system for AMD64 only (ARM64 builds are problematic)"; \
+			fi; \
 		else \
 			PLATFORM="linux/amd64,linux/arm64"; \
 		fi; \
