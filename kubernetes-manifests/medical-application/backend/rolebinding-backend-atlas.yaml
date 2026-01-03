@@ -1,0 +1,16 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: backend-atlas
+  namespace: backend
+  labels:
+    app: backend-atlas
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: backend-atlas
+subjects:
+  - kind: ServiceAccount
+    name: backend-atlas
+    namespace: backend
+

@@ -1,0 +1,33 @@
+# Deployment named "api-server"
+# Listens on :9001
+# Connects to "gateway-service" in "payments" namespace
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-server
+  namespace: backend
+  labels:
+    app: api-server
+    demo: roadshow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+       app: api-server
+  template:
+    metadata:
+     labels:
+       app: api-server
+    spec:
+      imagePullSecrets:
+      - name: rhacs-demo-pull-pull-secret
+      containers:
+      - image: quay.io/rhacs-demo/netflow:latest
+        command: ["/bin/entrypoint"]
+        args: ["-listen", "9001", "-connect", "backend-atlas-service.backend.svc.cluster.local:8080,postgres-service.backend.svc.cluster.local:5432,gateway-service.payments.svc.cluster.local:7777"]
+        imagePullPolicy: Always
+        name: api-server
+        ports:
+        - containerPort: 9001
+          protocol: TCP
+

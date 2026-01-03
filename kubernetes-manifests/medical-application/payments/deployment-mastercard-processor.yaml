@@ -1,0 +1,31 @@
+# Deployment named "mastercard-processor"
+# Listens on :8080
+# Vulnerable to struts
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mastercard-processor
+  namespace: payments
+  labels:
+    app: mastercard-processor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+       app: mastercard-processor
+  template:
+    metadata:
+     labels:
+       app: mastercard-processor
+    spec:
+      imagePullSecrets:
+      - name: rhacs-demo-pull-pull-secret
+      serviceAccountName: mastercard-processor
+      containers:
+      - image: quay.io/rhacs-demo/mastercard-processor:latest
+        imagePullPolicy: Always
+        name: mastercard-processor
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+

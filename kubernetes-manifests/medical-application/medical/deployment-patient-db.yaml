@@ -1,0 +1,31 @@
+# Deployment named "patient-db"
+# Listens on :8080
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: patient-db
+  namespace: medical
+  labels:
+    app: patient-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+       app: patient-db
+  template:
+    metadata:
+     labels:
+       app: patient-db
+    spec:
+      imagePullSecrets:
+      - name: rhacs-demo-pull-pull-secret
+      containers:
+      - image: quay.io/rhacs-demo/netflow:latest
+        command: ["/bin/entrypoint"]
+        args: ["-listen", "8080", "-connect", "reporting-service.medical.svc.cluster.local:8080"]
+        imagePullPolicy: Always
+        name: patient-db
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+

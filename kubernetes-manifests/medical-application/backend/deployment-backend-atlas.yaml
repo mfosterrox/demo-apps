@@ -1,0 +1,33 @@
+# Deployment named "backend-atlas"
+# Listens on :8080
+# Vulnerable to struts
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-atlas
+  namespace: backend
+  labels:
+    app: backend-atlas
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+       app: backend-atlas
+  template:
+    metadata:
+     labels:
+       app: backend-atlas
+    spec:
+      serviceAccountName: backend-atlas
+      imagePullSecrets:
+      - name: rhacs-demo-pull-pull-secret
+      containers:
+      - image: quay.io/rhacs-demo/backend-atlas:latest
+        imagePullPolicy: Always
+        name: backend-atlas
+        ports:
+        - containerPort: 8080
+      - image: quay.io/rhacs-demo/backend-atlas:sidecar-latest
+        command: ["/bin/entrypoint"]
+        name: log-collector
+

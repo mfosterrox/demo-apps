@@ -1,0 +1,19 @@
+# Service named "visa-processor-service"
+# Listens on :8080
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: visa-processor
+  name: visa-processor-service
+  namespace: payments
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+    name: http
+  selector:
+    app: visa-processor
+  type: ClusterIP
+

@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress
+  namespace: frontend
+  labels:
+    app: wordpress
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wordpress
+  template:
+    metadata:
+      labels:
+        app: wordpress
+    spec:
+      securityContext:
+        fsGroup: 1001  
+      containers:
+      - image: bitnami/wordpress:latest
+        name: wordpress
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        env:
+        - name: WORDPRESS_DATABASE_HOST
+          value: "wordpress.frontend.svc.cluster.local" 
+        - name: WORDPRESS_DATABASE_USER
+          value: "wordpress"
+        - name: WORDPRESS_DATABASE_PASSWORD
+          value: "wordpress"
+        - name: WORDPRESS_DATABASE_NAME
+          value: "wordpress"
+        volumeMounts:
+        - name: wordpress-data
+          mountPath: /bitnami/wordpress 
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 60
+          periodSeconds: 20
+      volumes:
+      - name: wordpress-data
+        persistentVolumeClaim:
+          claimName: wordpress-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wordpress-pvc
+  namespace: frontend
+spec:
+  accessModes:
+    - ReadWriteOnce 
+  resources:
+    requests:
+      storage: 10Gi

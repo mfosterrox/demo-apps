@@ -1,0 +1,41 @@
+# Deployment named "tls-proxy"
+# Listens on :80 and :443
+# Has SSH keys mounted
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tls-proxy
+  namespace: frontend
+  labels:
+    app: tls-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+       app: tls-proxy
+  template:
+    metadata:
+     labels:
+       app: tls-proxy
+    spec:
+      imagePullSecrets:
+      - name: rhacs-demo-pull-pull-secret
+      volumes:
+      - name: ssh-keys
+        secret:
+          secretName: ssh-keys
+      containers:
+      - image: quay.io/rhacs-demo/netflow:latest
+        command: ["/bin/entrypoint"]
+        args: ["-listen", "80,443", "-connect", "asset-cache-service.frontend.svc.cluster.local:8080,wordpress-service.frontend.svc.cluster.local:80"]
+        imagePullPolicy: Always
+        name: tls-proxy
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        - containerPort: 443
+          protocol: TCP
+        volumeMounts:
+        - name: ssh-keys
+          mountPath: "/root/.ssh"
+

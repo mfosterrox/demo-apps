@@ -1,0 +1,39 @@
+# Deployment named "gateway"
+# Listens on :7777
+# Has SSH keys mounted
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+  namespace: payments
+  labels:
+    app: gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+       app: gateway
+  template:
+    metadata:
+     labels:
+       app: gateway
+    spec:
+      imagePullSecrets:
+      - name: rhacs-demo-pull-pull-secret
+      volumes:
+      - name: ssh-keys
+        secret:
+          secretName: ssh-keys
+      containers:
+      - image: quay.io/rhacs-demo/netflow:latest
+        command: ["/bin/entrypoint"]
+        args: ["-listen", "7777", "-connect", "visa-processor-service.payments.svc.cluster.local:8080,mastercard-processor-service.payments.svc.cluster.local:8080"]
+        imagePullPolicy: Always
+        name: gateway
+        ports:
+        - containerPort: 7777
+          protocol: TCP
+        volumeMounts:
+        - name: ssh-keys
+          mountPath: "/root/.ssh"
+

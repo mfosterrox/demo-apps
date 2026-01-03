@@ -1,0 +1,32 @@
+# Deployment named "reporting"
+# Listens on :8080
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reporting
+  namespace: medical
+  labels:
+    app: reporting
+    demo: roadshow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+       app: reporting
+  template:
+    metadata:
+     labels:
+       app: reporting
+    spec:
+      imagePullSecrets:
+      - name: rhacs-demo-pull-pull-secret
+      containers:
+      - image: quay.io/rhacs-demo/reporting:latest
+        command: ["/bin/entrypoint"]
+        args: ["-listen", "8080", "-connect", "patient-db-service.medical.svc.cluster.local:8080"]
+        imagePullPolicy: Always
+        name: reporting
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+

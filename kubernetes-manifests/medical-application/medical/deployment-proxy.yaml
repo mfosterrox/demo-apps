@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: proxy
+  namespace: medical
+  labels:
+    app: proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+       app: proxy
+  template:
+    metadata:
+     labels:
+       app: proxy
+    spec:
+      imagePullSecrets:
+      - name: rhacs-demo-pull-pull-secret
+      containers:
+      - image: quay.io/rhacs-demo/proxy:latest
+        securityContext:
+          privileged: true
+        command: ["/bin/entrypoint"]
+        imagePullPolicy: Always
+        name: proxy
+

@@ -1,0 +1,19 @@
+# Service named "pupper-master-service"
+# Listens on :8140
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: puppet-master
+  name: pupper-master-service
+  namespace: operations
+spec:
+  ports:
+  - port: 8140
+    protocol: TCP
+    targetPort: 8140
+    name: http
+  selector:
+    app: puppet-master
+  type: ClusterIP
+

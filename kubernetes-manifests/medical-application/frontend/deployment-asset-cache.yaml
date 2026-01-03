@@ -1,0 +1,40 @@
+# Deployment named "asset-cache"
+# Listens on :8080
+# Vulnerable to struts
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: asset-cache
+  namespace: frontend
+  labels:
+    app: asset-cache
+    demo: roadshow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+       app: asset-cache
+  template:
+    metadata:
+     labels:
+       app: asset-cache
+    spec:
+      imagePullSecrets:
+      - name: rhacs-demo-pull-pull-secret
+      containers:
+      - image: quay.io/rhacs-demo/asset-cache:latest
+        imagePullPolicy: Always
+        name: asset-cache
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        securityContext:
+          capabilities:
+            drop: ["NET_ADMIN"]
+      - image: quay.io/rhacs-demo/asset-cache:sidecar-latest
+        imagePullPolicy: Always
+        name: asset-cache-sidecar
+        command: ["/bin/entrypoint"]
+        securityContext:
+          privileged: false
+

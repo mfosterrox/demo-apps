@@ -1,0 +1,15 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: juice-shop
+  namespace: juice-shop
+spec:
+  to:
+    kind: Service
+    name: juice-shop
+  port:
+    targetPort: 80
+  tls:
+    termination: edge
+  wildcardPolicy: None
+

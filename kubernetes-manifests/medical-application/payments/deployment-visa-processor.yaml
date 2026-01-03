@@ -1,0 +1,57 @@
+# Deployment named "visa-processor"
+# Listens on :8080
+# Vulnerable to struts
+# Has SSH keys mounted
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: visa-processor
+  namespace: payments
+  labels:
+    app: visa-processor
+    demo: roadshow
+  annotations:
+    "admission.stackrox.io/break-glass": "jira-3423"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+       app: visa-processor
+  template:
+    metadata:
+     labels:
+       app: visa-processor
+    spec:
+      imagePullSecrets:
+      - name: rhacs-demo-pull-pull-secret
+      serviceAccountName: visa-processor
+      volumes:
+      - name: ssh-keys
+        secret:
+          secretName: ssh-keys
+      containers:
+      - image: quay.io/rhacs-demo/visa-processor:latest-v2
+        imagePullPolicy: Always
+        name: visa-processor
+        ports:
+        - containerPort: 22
+          protocol: TCP
+        - containerPort: 8080
+          protocol: TCP
+        volumeMounts:
+        - name: ssh-keys
+          mountPath: "/root/.ssh"
+          readOnly: false
+        securityContext:
+          capabilities:
+            add: ["SYS_ADMIN"]
+        env:
+        - name: I_HAVE_A_SECRET
+          value: "true"
+      - image: quay.io/rhacs-demo/visa-processor:sidecar-latest-v2
+        imagePullPolicy: Always
+        name: visa-processor-sidecar
+        command: ["/bin/entrypoint"]
+        securityContext:
+          privileged: true
+

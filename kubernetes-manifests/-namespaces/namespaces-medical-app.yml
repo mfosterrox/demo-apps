@@ -30,14 +30,6 @@ metadata:
   labels:
     name: medical
 ---
-# Namespace for operations
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: operations
-  labels:
-    name: operations
----
 # Namespace for payments
 apiVersion: v1
 kind: Namespace

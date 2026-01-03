@@ -1,0 +1,42 @@
+# Deployment named "jump-host"
+# Listens on :22
+# Has SSH keys mounted
+# Connects to "visa-processor-service" in the "payments" namespace
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jump-host
+  namespace: operations
+  labels:
+    app: jump-host
+    demo: roadshow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+       app: jump-host
+  template:
+    metadata:
+     labels:
+       app: jump-host
+    spec:
+      volumes:
+      - name: ssh-keys
+        secret:
+          secretName: ssh-keys
+      imagePullSecrets:
+      - name: rhacs-demo-pull-pull-secret
+      containers:
+      - image: quay.io/rhacs-demo/jump-host:latest
+        command: ["/bin/entrypoint"]
+        args: ["-listen", "22", "-connect", "pupper-master-service.operations.svc.cluster.local:8140,visa-processor-service.payments.svc.cluster.local:8080,patient-db-service.medical.svc.cluster.local:8080"]
+        imagePullPolicy: Always
+        name: jump-host
+        ports:
+        - containerPort: 22
+          name: tcp
+          protocol: TCP
+        volumeMounts:
+        - name: ssh-keys
+          mountPath: "/root/.ssh"
+

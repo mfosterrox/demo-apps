@@ -1,0 +1,45 @@
+# Deployment named "puppet-master"
+# Listens on :8140
+# Runs apt-get
+# Runs nmap
+# Mounts the host Docker socket
+# Runs as privileged
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: puppet-master
+  namespace: operations
+  labels:
+    app: puppet-master
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+       app: puppet-master
+  template:
+    metadata:
+     labels:
+       app: puppet-master
+    spec:
+      imagePullSecrets:
+      - name: rhacs-demo-pull-pull-secret
+      serviceAccountName: puppet-master
+      volumes:
+      - hostPath:
+          path: /var/run/docker.sock
+        name: var-run-docker-sock
+      containers:
+      - image: quay.io/rhacs-demo/netflow:latest
+        command: ["/bin/sh"]
+        args: ["-c", "/usr/bin/apt-get install nmap; /bin/nmap -Pn 10.0.0.0/24; /bin/entrypoint -listen 8140"]
+        imagePullPolicy: Always
+        name: puppet-master
+        securityContext:
+          privileged: true
+        ports:
+        - containerPort: 8140
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /host/var/run/docker.sock
+          name: var-run-docker-sock
+

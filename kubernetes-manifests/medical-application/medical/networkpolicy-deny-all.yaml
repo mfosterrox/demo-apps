@@ -1,0 +1,44 @@
+# Network policy named "deny-all"
+# Denies all ingress and egress traffic
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: deny-all
+  namespace: medical
+spec:
+  policyTypes:
+  - Ingress
+  - Egress
+  podSelector: {}
+  egress:
+  - ports:
+    # Istio-pilot port -- required for istio-proxy registration
+    - port: 15010
+    to:
+    - namespaceSelector:
+        matchLabels:
+          istio-system: "true"
+  - ports:
+    - protocol: UDP
+      # kube-dns -- required for istio-proxy to find istio-pilot service
+      port: 53
+    to:
+    - namespaceSelector:
+        matchLabels:
+          kube-system: "true"
+  ingress:
+  - ports:
+    # Istio-proxy status port -- required for Istio to update routing
+    - port: 15020
+    from:
+    - namespaceSelector:
+        matchLabels:
+          istio-system: "true"
+  - ports:
+    # Istio-proxy port -- required for Istio to update routing
+    - port: 15090
+    from:
+    - namespaceSelector:
+        matchLabels:
+          istio-system: "true"
+

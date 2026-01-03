@@ -1,0 +1,16 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: puppet-master
+  namespace: operations
+  labels:
+    app: puppet-master
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: puppet-master
+subjects:
+  - kind: ServiceAccount
+    name: puppet-master
+    namespace: operations
+

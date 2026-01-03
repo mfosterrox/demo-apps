@@ -1,0 +1,39 @@
+# Deployment named "postgres"
+# Listens on :5432
+# Has SSH keys mounted
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: backend
+  labels:
+    app: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+       app: postgres
+  template:
+    metadata:
+     labels:
+       app: postgres
+    spec:
+      imagePullSecrets:
+        - name: rhacs-demo-pull-pull-secret
+      volumes:
+      - name: ssh-keys
+        secret:
+          secretName: ssh-keys
+      containers:
+      - image: quay.io/rhacs-demo/netflow:latest
+        command: ["/bin/entrypoint"]
+        args: ["-listen", "5432"]
+        imagePullPolicy: Always
+        name: postgres
+        ports:
+        - containerPort: 5432
+          protocol: TCP
+        volumeMounts:
+        - name: ssh-keys
+          mountPath: "/root/.ssh"
+
