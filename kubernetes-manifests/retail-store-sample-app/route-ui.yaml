@@ -1,15 +1,16 @@
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
-  name: rce-http-exploit
-  namespace: rce-http-exploit
+  name: ui
+  namespace: retail-store-sample-app
   labels:
+    app: ui
     demo: roadshow
     repo: demo-apps
 spec:
   to:
     kind: Service
-    name: rce-http-exploit
+    name: ui
   port:
     targetPort: 80
   tls:

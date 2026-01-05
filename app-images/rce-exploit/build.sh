@@ -1,1 +1,0 @@
-buildamd64.sh

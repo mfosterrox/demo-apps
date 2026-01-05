@@ -1,7 +1,7 @@
 # Define variables
 TEAM_NAME := mfoster
 VERSION := 0.1.0
-APPLICATIONS:= ctf-web-to-system dvwa dvwa-hummingbird frontend juice-shop log4shell nodejs-goof-vuln-main payment-processor rce-exploit rce-http-exploit webgoat
+APPLICATIONS:= ctf-web-to-system dvwa dvwa-hummingbird log4shell nodejs-goof-vuln-main payment-processor webgoat
 MANIFEST_DIR ?= kubernetes-manifests  
 
 update:
@@ -193,13 +193,13 @@ check:
 			echo "Checking $$component ($$TOTAL/$$TOTAL_COUNT)..."; \
 			echo "  Image: $$IMAGE_NAME"; \
 			if podman run -d --name $$CONTAINER_NAME \
-				--rm \
 				$$IMAGE_NAME >/dev/null 2>&1; then \
 				echo "  ✓ Container started successfully"; \
-				sleep 5; \
+				sleep 3; \
 				CONTAINER_STATUS=$$(podman ps -a --filter "name=$$CONTAINER_NAME" --format "{{.Status}}" 2>/dev/null || echo ""); \
+				EXIT_CODE=$$(podman inspect $$CONTAINER_NAME --format '{{.State.ExitCode}}' 2>/dev/null || echo "-1"); \
 				if [ -n "$$CONTAINER_STATUS" ]; then \
-					if echo "$$CONTAINER_STATUS" | grep -qE "(Up|Exited \(0\)|Created)"; then \
+					if echo "$$CONTAINER_STATUS" | grep -qE "^Up"; then \
 						CONTAINER_LOGS=$$(podman logs $$CONTAINER_NAME 2>&1 | tail -30); \
 						if echo "$$CONTAINER_LOGS" | grep -qiE "(error|exception|failed|fatal|cannot|unable to)"; then \
 							FAILED=$$((FAILED + 1)); \
@@ -212,11 +212,29 @@ check:
 							SUCCESSFUL_CHECKS="$$SUCCESSFUL_CHECKS $$component"; \
 							echo "  ✓ Container is running without errors"; \
 						fi; \
+					elif echo "$$CONTAINER_STATUS" | grep -qE "Exited \(0\)"; then \
+						CONTAINER_LOGS=$$(podman logs $$CONTAINER_NAME 2>&1 | tail -30); \
+						if echo "$$CONTAINER_LOGS" | grep -qiE "(error|exception|failed|fatal|cannot|unable to)"; then \
+							FAILED=$$((FAILED + 1)); \
+							FAILED_CHECKS="$$FAILED_CHECKS $$component"; \
+							echo "  ✗ Container exited but has errors in logs"; \
+							echo "  Last 10 lines of logs:"; \
+							echo "$$CONTAINER_LOGS" | tail -10 | sed 's/^/    /'; \
+						else \
+							SUCCESS=$$((SUCCESS + 1)); \
+							SUCCESSFUL_CHECKS="$$SUCCESSFUL_CHECKS $$component"; \
+							echo "  ✓ Container exited successfully (expected for script-based containers)"; \
+						fi; \
+					elif [ "$$EXIT_CODE" = "0" ]; then \
+						SUCCESS=$$((SUCCESS + 1)); \
+						SUCCESSFUL_CHECKS="$$SUCCESSFUL_CHECKS $$component"; \
+						echo "  ✓ Container exited with code 0 (success)"; \
 					else \
 						FAILED=$$((FAILED + 1)); \
 						FAILED_CHECKS="$$FAILED_CHECKS $$component"; \
 						echo "  ✗ Container exited with error"; \
 						echo "  Status: $$CONTAINER_STATUS"; \
+						echo "  Exit Code: $$EXIT_CODE"; \
 						echo "  Last 10 lines of logs:"; \
 						podman logs $$CONTAINER_NAME 2>&1 | tail -10 | sed 's/^/    /' || true; \
 					fi; \
