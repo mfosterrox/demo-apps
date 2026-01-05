@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dvwa
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dvwa
+  namespace: dvwa
+  labels: 
+    demo: roadshow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dvwa
+  template:
+    metadata:
+      labels:
+        app: dvwa
+    spec:
+      containers:
+        - name: dvwa
+          image: quay.io/mfoster/dvwa-hummingbird:0.2.1
+          command: ["/bin/bash", "-c", "while true; do sleep 1000; done"]
+          stdin: true
+          tty: true

@@ -34,7 +34,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends build-essential
     apt-get clean && rm -rf /var/lib/apt/lists/*
 COPY --from=installer /juice-shop/node_modules ./node_modules
 COPY --from=installer /juice-shop/package.json ./package.json
-COPY --from=installer /juice-shop/package-lock.json ./package-lock.json 2>/dev/null || true
+RUN --mount=type=bind,from=installer,source=/juice-shop,target=/tmp/installer-source \
+    test -f /tmp/installer-source/package-lock.json && cp /tmp/installer-source/package-lock.json ./package-lock.json || true
 # Build libxmljs2
 RUN rm -rf node_modules/libxmljs2/build && \
   cd node_modules/libxmljs2 && \
