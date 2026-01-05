@@ -27,7 +27,21 @@ ENV HOME=/app
 RUN mkdir -p /tmp/.npm && chmod 777 /tmp/.npm
 # Configure npm to use the writable cache directory
 RUN npm config set cache /tmp/.npm --global
+# Install node-gyp globally for native module builds
+RUN npm install -g node-gyp --unsafe-perm
+# Install dependencies - sqlite3 will be built during install with --unsafe-perm
+# This ensures native modules are compiled correctly
 RUN npm install --no-audit --unsafe-perm || npm install --no-audit --unsafe-perm --legacy-peer-deps
+
+# Verify sqlite3 module directory exists
+# Note: We don't try to require() it here as it may cause segfaults during build
+# The module will be tested at runtime when the app starts
+RUN if [ ! -d "node_modules/sqlite3" ]; then \
+        echo "ERROR: sqlite3 module directory not found after npm install" && exit 1; \
+    else \
+        echo "✓ sqlite3 module directory found"; \
+        ls -la node_modules/sqlite3/ | head -5 || true; \
+    fi
 
 USER 1000
 CMD npm start

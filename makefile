@@ -1,6 +1,6 @@
 # Define variables
 TEAM_NAME := mfoster
-VERSION := 0.2.1
+VERSION := 0.1.0
 APPLICATIONS:= ctf-web-to-system dvwa dvwa-hummingbird frontend juice-shop log4shell nodejs-goof-vuln-main payment-processor rce-exploit rce-http-exploit webgoat
 MANIFEST_DIR ?= kubernetes-manifests  
 
@@ -161,6 +161,122 @@ build:
 		fi; \
 	fi
 
+
+check:
+	@echo "========================================================="
+	@echo "Starting container health checks for all applications..."
+	@echo "========================================================="
+	@SUCCESSFUL_CHECKS=""; \
+	FAILED_CHECKS=""; \
+	SKIPPED_CHECKS=""; \
+	TOTAL=0; \
+	SUCCESS=0; \
+	FAILED=0; \
+	SKIPPED=0; \
+	for component in $(APPLICATIONS); do \
+		TOTAL=$$((TOTAL + 1)); \
+	done; \
+	TOTAL_COUNT=$$TOTAL; \
+	TOTAL=0; \
+	for component in $(APPLICATIONS); do \
+		TOTAL=$$((TOTAL + 1)); \
+		echo ""; \
+		IMAGE_NAME="quay.io/$(TEAM_NAME)/$${component}:$(VERSION)"; \
+		CONTAINER_NAME="check-$${component}-$$$$"; \
+		if ! podman image exists $$IMAGE_NAME >/dev/null 2>&1; then \
+			SKIPPED=$$((SKIPPED + 1)); \
+			SKIPPED_CHECKS="$$SKIPPED_CHECKS $$component"; \
+			echo "⊘ Skipping $$component ($$TOTAL/$$TOTAL_COUNT) - image does not exist"; \
+			echo "  Image: $$IMAGE_NAME"; \
+			echo "  Run 'make build COMPONENT=$$component' to build it first"; \
+		else \
+			echo "Checking $$component ($$TOTAL/$$TOTAL_COUNT)..."; \
+			echo "  Image: $$IMAGE_NAME"; \
+			if podman run -d --name $$CONTAINER_NAME \
+				--rm \
+				$$IMAGE_NAME >/dev/null 2>&1; then \
+				echo "  ✓ Container started successfully"; \
+				sleep 5; \
+				CONTAINER_STATUS=$$(podman ps -a --filter "name=$$CONTAINER_NAME" --format "{{.Status}}" 2>/dev/null || echo ""); \
+				if [ -n "$$CONTAINER_STATUS" ]; then \
+					if echo "$$CONTAINER_STATUS" | grep -qE "(Up|Exited \(0\)|Created)"; then \
+						CONTAINER_LOGS=$$(podman logs $$CONTAINER_NAME 2>&1 | tail -30); \
+						if echo "$$CONTAINER_LOGS" | grep -qiE "(error|exception|failed|fatal|cannot|unable to)"; then \
+							FAILED=$$((FAILED + 1)); \
+							FAILED_CHECKS="$$FAILED_CHECKS $$component"; \
+							echo "  ✗ Container has errors in logs"; \
+							echo "  Last 10 lines of logs:"; \
+							echo "$$CONTAINER_LOGS" | tail -10 | sed 's/^/    /'; \
+						else \
+							SUCCESS=$$((SUCCESS + 1)); \
+							SUCCESSFUL_CHECKS="$$SUCCESSFUL_CHECKS $$component"; \
+							echo "  ✓ Container is running without errors"; \
+						fi; \
+					else \
+						FAILED=$$((FAILED + 1)); \
+						FAILED_CHECKS="$$FAILED_CHECKS $$component"; \
+						echo "  ✗ Container exited with error"; \
+						echo "  Status: $$CONTAINER_STATUS"; \
+						echo "  Last 10 lines of logs:"; \
+						podman logs $$CONTAINER_NAME 2>&1 | tail -10 | sed 's/^/    /' || true; \
+					fi; \
+				else \
+					FAILED=$$((FAILED + 1)); \
+					FAILED_CHECKS="$$FAILED_CHECKS $$component"; \
+					echo "  ✗ Container not found after start"; \
+				fi; \
+				podman stop $$CONTAINER_NAME >/dev/null 2>&1 || true; \
+				podman rm -f $$CONTAINER_NAME >/dev/null 2>&1 || true; \
+			else \
+				FAILED=$$((FAILED + 1)); \
+				FAILED_CHECKS="$$FAILED_CHECKS $$component"; \
+				echo "  ✗ Failed to start container"; \
+				sleep 1; \
+				if podman ps -a --filter "name=$$CONTAINER_NAME" --format "{{.Names}}" | grep -q "$$CONTAINER_NAME"; then \
+					echo "  Last 20 lines of logs:"; \
+					podman logs $$CONTAINER_NAME 2>&1 | tail -20 | sed 's/^/    /' || true; \
+					podman rm -f $$CONTAINER_NAME >/dev/null 2>&1 || true; \
+				fi; \
+			fi; \
+		fi; \
+	done; \
+	echo ""; \
+	echo "========================================================="; \
+	echo "Check Summary"; \
+	echo "========================================================="; \
+	echo "Total components checked: $$TOTAL"; \
+	echo "Successful checks: $$SUCCESS"; \
+	echo "Skipped (image missing): $$SKIPPED"; \
+	echo "Failed checks: $$FAILED"; \
+	echo ""; \
+	if [ -n "$$SUCCESSFUL_CHECKS" ]; then \
+		echo "✓ Successfully checked:"; \
+		for component in $$SUCCESSFUL_CHECKS; do \
+			echo "  - $$component"; \
+		done; \
+		echo ""; \
+	fi; \
+	if [ -n "$$SKIPPED_CHECKS" ]; then \
+		echo "⊘ Skipped (image missing):"; \
+		for component in $$SKIPPED_CHECKS; do \
+			echo "  - $$component"; \
+		done; \
+		echo ""; \
+	fi; \
+	if [ -n "$$FAILED_CHECKS" ]; then \
+		echo "✗ Failed checks:"; \
+		for component in $$FAILED_CHECKS; do \
+			echo "  - $$component"; \
+		done; \
+		echo ""; \
+	fi; \
+	echo "========================================================="; \
+	if [ $$FAILED -gt 0 ]; then \
+		echo "Check completed with errors. Some containers failed to start."; \
+		exit 1; \
+	else \
+		echo "All checks completed successfully!"; \
+	fi
 
 rm-all-containers:
 	podman rm $$(podman ps -a -q)

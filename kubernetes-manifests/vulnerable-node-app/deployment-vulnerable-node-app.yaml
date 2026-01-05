@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
         - name: vulnerable-node-app
-          image: quay.io/mfoster/vulnerable-node-app:0.2.1
+          image: quay.io/mfoster/vulnerable-node-app:0.1.0
           ports:
             - containerPort: 3000
           securityContext:

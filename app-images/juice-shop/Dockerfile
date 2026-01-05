@@ -5,9 +5,19 @@ WORKDIR /juice-shop
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN npm i -g typescript ts-node
 RUN npm ci --unsafe-perm --ignore-scripts 2>/dev/null || npm install --unsafe-perm --ignore-scripts
-RUN cd frontend && npm install --legacy-peer-deps && cd .. || echo "Frontend install failed, continuing..."
-RUN npm run build:frontend || echo "Frontend build failed (may be QEMU issue), continuing with server build..."
-RUN npm run build:server || echo "Server build failed, continuing..."
+# Install frontend dependencies - must succeed
+RUN cd frontend && npm install --legacy-peer-deps && cd .. || (echo "ERROR: Frontend install failed" && exit 1)
+# Build frontend - must succeed
+RUN npm run build:frontend || (echo "ERROR: Frontend build failed" && exit 1)
+# Verify frontend build output exists
+RUN test -f frontend/dist/frontend/index.html || (echo "ERROR: frontend/dist/frontend/index.html missing" && exit 1)
+RUN test -f frontend/dist/frontend/main.js || (echo "ERROR: frontend/dist/frontend/main.js missing" && exit 1)
+RUN test -f frontend/dist/frontend/styles.css || (echo "ERROR: frontend/dist/frontend/styles.css missing" && exit 1)
+RUN test -f frontend/dist/frontend/runtime.js || (echo "ERROR: frontend/dist/frontend/runtime.js missing" && exit 1)
+RUN test -f frontend/dist/frontend/vendor.js || (echo "ERROR: frontend/dist/frontend/vendor.js missing" && exit 1)
+RUN test -f frontend/dist/frontend/polyfills.js || (echo "ERROR: frontend/dist/frontend/polyfills.js missing" && exit 1)
+# Build server - must succeed
+RUN npm run build:server || (echo "ERROR: Server build failed" && exit 1)
 RUN npm dedupe
 RUN npm prune --production
 RUN rm -rf frontend/node_modules
