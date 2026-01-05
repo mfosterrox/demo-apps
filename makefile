@@ -1,6 +1,6 @@
 # Define variables
 TEAM_NAME := mfoster
-VERSION := 0.2
+VERSION := 0.2.1
 APPLICATIONS:= ctf-web-to-system dvwa dvwa-hummingbird frontend juice-shop log4shell nodejs-goof-vuln-main payment-processor rce-exploit rce-http-exploit webgoat
 MANIFEST_DIR ?= kubernetes-manifests  
 
@@ -33,13 +33,28 @@ build-images:
 		TOTAL=$$((TOTAL + 1)); \
 		echo ""; \
 		IMAGE_NAME="quay.io/$(TEAM_NAME)/$${component}:$(VERSION)"; \
-		if podman image exists $$IMAGE_NAME >/dev/null 2>&1; then \
+		DOCKERFILE="app-images/$${component}/Dockerfile"; \
+		SHOULD_BUILD=false; \
+		if ! podman image exists $$IMAGE_NAME >/dev/null 2>&1; then \
+			SHOULD_BUILD=true; \
+			echo "Building $$component ($$TOTAL/$$TOTAL_COUNT)... (image does not exist)"; \
+		elif [ -f "$$DOCKERFILE" ]; then \
+			IMAGE_CREATED=$$(podman image inspect $$IMAGE_NAME --format '{{.Created}}' 2>/dev/null || echo ""); \
+			if [ -n "$$IMAGE_CREATED" ]; then \
+				IMAGE_TIME=$$(python3 -c "from datetime import datetime; print(int(datetime.fromisoformat('$$IMAGE_CREATED'.replace('Z', '+00:00')).timestamp()))" 2>/dev/null || echo "0"); \
+				DOCKERFILE_TIME=$$(stat -c %Y "$$DOCKERFILE" 2>/dev/null || stat -f %m "$$DOCKERFILE" 2>/dev/null || echo "0"); \
+				if [ "$$DOCKERFILE_TIME" -gt "$$IMAGE_TIME" ] 2>/dev/null && [ "$$IMAGE_TIME" != "0" ]; then \
+					SHOULD_BUILD=true; \
+					echo "Building $$component ($$TOTAL/$$TOTAL_COUNT)... (Dockerfile is newer than image)"; \
+				fi; \
+			fi; \
+		fi; \
+		if [ "$$SHOULD_BUILD" = "false" ]; then \
 			SKIPPED=$$((SKIPPED + 1)); \
 			SKIPPED_BUILDS="$$SKIPPED_BUILDS $$component"; \
-			echo "⊘ Skipping $$component ($$TOTAL/$$TOTAL_COUNT) - image already exists locally"; \
+			echo "⊘ Skipping $$component ($$TOTAL/$$TOTAL_COUNT) - image is up to date"; \
 			echo "  Image: $$IMAGE_NAME"; \
 		else \
-			echo "Building $$component ($$TOTAL/$$TOTAL_COUNT)..."; \
 			PLATFORM="linux/amd64"; \
 			if ( cd app-images/$${component}; \
 				podman build --platform $$PLATFORM \
@@ -98,17 +113,36 @@ build:
 		exit 1; \
 	fi
 	@IMAGE_NAME="quay.io/$(TEAM_NAME)/$(COMPONENT):$(VERSION)"; \
-	if podman image exists $$IMAGE_NAME >/dev/null 2>&1; then \
-		echo "========================================================="; \
-		echo "Image already exists locally: $(COMPONENT)"; \
-		echo "========================================================="; \
-		echo "⊘ Skipping build - image already exists"; \
-		echo "Image: $$IMAGE_NAME"; \
-		echo "========================================================="; \
-	else \
+	DOCKERFILE="app-images/$(COMPONENT)/Dockerfile"; \
+	SHOULD_BUILD=false; \
+	if ! podman image exists $$IMAGE_NAME >/dev/null 2>&1; then \
+		SHOULD_BUILD=true; \
 		echo "========================================================="; \
 		echo "Building component: $(COMPONENT)"; \
 		echo "========================================================="; \
+		echo "Reason: Image does not exist"; \
+	elif [ -f "$$DOCKERFILE" ]; then \
+		IMAGE_CREATED=$$(podman image inspect $$IMAGE_NAME --format '{{.Created}}' 2>/dev/null || echo ""); \
+		if [ -n "$$IMAGE_CREATED" ]; then \
+			IMAGE_TIME=$$(python3 -c "from datetime import datetime; print(int(datetime.fromisoformat('$$IMAGE_CREATED'.replace('Z', '+00:00')).timestamp()))" 2>/dev/null || echo "0"); \
+			DOCKERFILE_TIME=$$(stat -c %Y "$$DOCKERFILE" 2>/dev/null || stat -f %m "$$DOCKERFILE" 2>/dev/null || echo "0"); \
+			if [ "$$DOCKERFILE_TIME" -gt "$$IMAGE_TIME" ] 2>/dev/null && [ "$$IMAGE_TIME" != "0" ]; then \
+				SHOULD_BUILD=true; \
+				echo "========================================================="; \
+				echo "Building component: $(COMPONENT)"; \
+				echo "========================================================="; \
+				echo "Reason: Dockerfile is newer than image"; \
+			fi; \
+		fi; \
+	fi; \
+	if [ "$$SHOULD_BUILD" = "false" ]; then \
+		echo "========================================================="; \
+		echo "Image already exists locally: $(COMPONENT)"; \
+		echo "========================================================="; \
+		echo "⊘ Skipping build - image is up to date"; \
+		echo "Image: $$IMAGE_NAME"; \
+		echo "========================================================="; \
+	else \
 		PLATFORM="linux/amd64"; \
 		if ( cd app-images/$(COMPONENT); \
 			podman build --platform $$PLATFORM \

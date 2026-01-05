@@ -27,15 +27,22 @@ ARG CYCLONEDX_NPM_VERSION=latest
 RUN npm install -g @cyclonedx/cyclonedx-npm@$CYCLONEDX_NPM_VERSION
 RUN npm run sbom
 
-# Stage 2: fix libxml issue
-FROM node:20-bullseye AS libxmljs-builder
+# Stage 2: fix libxml issue and build native modules
+FROM node:20-bullseye AS native-builder
 WORKDIR /juice-shop
 RUN apt-get update && apt-get install -y --no-install-recommends build-essential python3 && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 COPY --from=installer /juice-shop/node_modules ./node_modules
+COPY --from=installer /juice-shop/package.json ./package.json
+COPY --from=installer /juice-shop/package-lock.json ./package-lock.json 2>/dev/null || true
+# Build libxmljs2
 RUN rm -rf node_modules/libxmljs2/build && \
   cd node_modules/libxmljs2 && \
   npm run build || echo "Warning: libxmljs2 build failed, continuing anyway"
+# Build sqlite3 native module - rebuild for the target platform
+RUN npm rebuild sqlite3 --build-from-source || \
+  (cd node_modules/sqlite3 && npm run install-build || node-gyp rebuild) || \
+  echo "Warning: sqlite3 build failed, continuing anyway"
   
 # Stage 3: Builder
 FROM gcr.io/distroless/nodejs20-debian11
@@ -55,7 +62,8 @@ LABEL maintainer="Bjoern Kimminich <bjoern.kimminich@owasp.org>" \
     org.opencontainers.image.created=$BUILD_DATE
 WORKDIR /juice-shop
 COPY --from=installer --chown=65532:0 /juice-shop .
-COPY --chown=65532:0 --from=libxmljs-builder /juice-shop/node_modules/libxmljs2 ./node_modules/libxmljs2
+COPY --chown=65532:0 --from=native-builder /juice-shop/node_modules/libxmljs2 ./node_modules/libxmljs2
+COPY --chown=65532:0 --from=native-builder /juice-shop/node_modules/sqlite3 ./node_modules/sqlite3
 USER 65532
 EXPOSE 3000
 CMD ["/juice-shop/build/app.js"]

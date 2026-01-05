@@ -16,10 +16,35 @@ spec:
         app: wordpress
     spec:
       securityContext:
-        fsGroup: 1001  
+        fsGroup: 1001
+        supplementalGroups: [1001]
+      initContainers:
+      - name: volume-permissions
+        image: bitnami/wordpress:latest
+        command: ['sh', '-c']
+        args:
+          - |
+            mkdir -p /bitnami/wordpress
+            chown -R 1001:1001 /bitnami/wordpress
+            chmod -R 775 /bitnami/wordpress
+            # Ensure the directory is writable for the WordPress user
+            find /bitnami/wordpress -type d -exec chmod 775 {} \;
+            find /bitnami/wordpress -type f -exec chmod 664 {} \;
+        securityContext:
+          runAsUser: 0
+        volumeMounts:
+        - name: wordpress-data
+          mountPath: /bitnami/wordpress
       containers:
       - image: bitnami/wordpress:latest
         name: wordpress
+        securityContext:
+          runAsUser: 1001
+          runAsGroup: 1001
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
         ports:
         - containerPort: 80
           protocol: TCP
