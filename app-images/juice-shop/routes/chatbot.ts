@@ -1,31 +1,30 @@
 /*
- * Copyright (c) 2014-2023 Bjoern Kimminich & the OWASP Juice Shop contributors.
+ * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
  * SPDX-License-Identifier: MIT
  */
 
-import fs from 'fs/promises'
+import fs from 'node:fs/promises'
 import { type Request, type Response, type NextFunction } from 'express'
 import { type User } from '../data/types'
 import { UserModel } from '../models/user'
 import jwt, { type JwtPayload, type VerifyErrors } from 'jsonwebtoken'
-import challengeUtils = require('../lib/challengeUtils')
+import * as challengeUtils from '../lib/challengeUtils'
 import logger from '../lib/logger'
 import config from 'config'
 import download from 'download'
 import * as utils from '../lib/utils'
 import { isString } from 'lodash'
-import { Bot } from 'juicy-chat-bot'
+import Bot from 'juicy-chat-bot'
 import validateChatBot from '../lib/startup/validateChatBot'
 import * as security from '../lib/insecurity'
 import * as botUtils from '../lib/botUtils'
-
-const challenges = require('../data/datacache').challenges
+import { challenges } from '../data/datacache'
 
 let trainingFile = config.get<string>('application.chatBot.trainingData')
 let testCommand: string
 export let bot: Bot | null = null
 
-export async function initialize () {
+export async function initializeChatbot () {
   if (utils.isUrl(trainingFile)) {
     const file = utils.extractFilename(trainingFile)
     const data = await download(trainingFile)
@@ -46,7 +45,7 @@ export async function initialize () {
   return bot.train()
 }
 
-void initialize()
+void initializeChatbot()
 
 async function processQuery (user: User, req: Request, res: Response, next: NextFunction) {
   if (bot == null) {
@@ -142,7 +141,6 @@ async function setUserName (user: User, req: Request, res: Response) {
     const updatedUser = await userModel.update({ username: req.body.query })
     const updatedUserResponse = utils.queryResultToJson(updatedUser)
     const updatedToken = security.authorize(updatedUserResponse)
-    // @ts-expect-error FIXME some properties missing in updatedUserResponse
     security.authenticatedUsers.put(updatedToken, updatedUserResponse)
     bot.addUser(`${updatedUser.id}`, req.body.query)
     res.status(200).json({
@@ -161,7 +159,7 @@ export const status = function status () {
     if (bot == null) {
       res.status(200).json({
         status: false,
-        body: `${config.get('application.chatBot.name')} isn't ready at the moment, please wait while I set things up`
+        body: `${config.get<string>('application.chatBot.name')} isn't ready at the moment, please wait while I set things up`
       })
       return
     }
@@ -169,7 +167,7 @@ export const status = function status () {
     if (!token) {
       res.status(200).json({
         status: bot.training.state,
-        body: `Hi, I can't recognize you. Sign in to talk to ${config.get('application.chatBot.name')}`
+        body: `Hi, I can't recognize you. Sign in to talk to ${config.get<string>('application.chatBot.name')}`
       })
       return
     }
@@ -196,7 +194,7 @@ export const status = function status () {
       bot.addUser(`${user.id}`, username)
       res.status(200).json({
         status: bot.training.state,
-        body: bot.training.state ? bot.greet(`${user.id}`) : `${config.get('application.chatBot.name')} isn't ready at the moment, please wait while I set things up`
+        body: bot.training.state ? bot.greet(`${user.id}`) : `${config.get<string>('application.chatBot.name')} isn't ready at the moment, please wait while I set things up`
       })
     } catch (err) {
       next(new Error('Blocked illegal activity by ' + req.socket.remoteAddress))
@@ -204,12 +202,12 @@ export const status = function status () {
   }
 }
 
-module.exports.process = function respond () {
+export function process () {
   return async (req: Request, res: Response, next: NextFunction) => {
     if (bot == null) {
       res.status(200).json({
         action: 'response',
-        body: `${config.get('application.chatBot.name')} isn't ready at the moment, please wait while I set things up`
+        body: `${config.get<string>('application.chatBot.name')} isn't ready at the moment, please wait while I set things up`
       })
     }
     const token = req.cookies.token || utils.jwtFrom(req)

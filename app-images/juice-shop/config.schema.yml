@@ -3,6 +3,8 @@ server:
     type: number
   basePath:
     type: string
+  baseUrl:
+    type: string
 application:
   domain:
     type: string
@@ -40,6 +42,10 @@ application:
     avatar:
       type: string
   social:
+    blueSkyUrl:
+      type: string
+    mastodonUrl:
+      type: string
     twitterUrl:
       type: string
     facebookUrl:
@@ -84,6 +90,8 @@ application:
       type: string
     hiring:
       type: string
+    csaf:
+      type: string
   promotion:
     video:
       type: string
@@ -117,10 +125,15 @@ challenges:
     type: string
   xssBonusPayload:
     type: string
-  safetyOverride:
-    type: boolean
+  safetyMode:
+    type: string
+    enum: ['enabled', 'disabled','auto']
   showFeedbackButtons:
     type: boolean
+  csafHashValue:
+    type: string
+  metricsIgnoredUserAgents:
+    - type: string
 hackingInstructor:
   isEnabled:
     type: boolean
@@ -707,6 +720,26 @@ ctf:
       code:
         type: string
     emptyUserRegistration:
+      name:
+        type: string
+      code:
+        type: string
+    csafChallenge:
+      name:
+        type: string
+      code:
+        type: string
+    exposedCredentialsChallenge:
+      name:
+        type: string
+      code:
+        type: string
+    yamlBombChallenge:
+      name:
+        type: string
+      code:
+        type: string
+    leakedApiKeyChallenge:
       name:
         type: string
       code:

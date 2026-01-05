@@ -1,7 +1,7 @@
 {
 	"accessLogDisclosureChallenge_1_correct.ts": {
 		"added": [
-			13
+			16
 		],
 		"removed": []
 	},
@@ -41,28 +41,48 @@
 	},
 	"changeProductChallenge_1.ts": {
 		"added": [
-			43
+			3,
+			48
 		],
-		"removed": []
+		"removed": [
+			3,
+			4,
+			5
+		]
 	},
 	"changeProductChallenge_2.ts": {
 		"added": [
+			3,
 			18,
-			43
+			48
 		],
-		"removed": []
+		"removed": [
+			3,
+			4,
+			5
+		]
 	},
 	"changeProductChallenge_3_correct.ts": {
 		"added": [
-			43
+			3,
+			48
 		],
-		"removed": []
+		"removed": [
+			3,
+			4,
+			5
+		]
 	},
 	"changeProductChallenge_4.ts": {
 		"added": [
-			43
+			3,
+			48
 		],
-		"removed": []
+		"removed": [
+			3,
+			4,
+			5
+		]
 	},
 	"dbSchemaChallenge_1.ts": {
 		"added": [],
@@ -107,20 +127,31 @@
 		"removed": []
 	},
 	"exposedMetricsChallenge_1.ts": {
-		"added": [],
-		"removed": []
+		"added": [
+			7
+		],
+		"removed": [
+			7
+		]
 	},
 	"exposedMetricsChallenge_2.ts": {
 		"added": [
 			2,
-			19,
-			36
+			7,
+			16,
+			33
 		],
-		"removed": []
+		"removed": [
+			7
+		]
 	},
 	"exposedMetricsChallenge_3_correct.ts": {
-		"added": [],
-		"removed": []
+		"added": [
+			7
+		],
+		"removed": [
+			7
+		]
 	},
 	"forgedReviewChallenge_1.ts": {
 		"added": [
@@ -360,32 +391,52 @@
 		"removed": []
 	},
 	"registerAdminChallenge_1.ts": {
-		"added": [],
-		"removed": []
+		"added": [
+			2
+		],
+		"removed": [
+			2,
+			4,
+			5
+		]
 	},
 	"registerAdminChallenge_2.ts": {
 		"added": [
+			2,
 			5,
-			26,
 			27,
 			28,
-			31,
+			29,
 			32,
-			33
+			33,
+			34
 		],
 		"removed": [
-			26
+			2,
+			4,
+			5,
+			27
 		]
 	},
 	"registerAdminChallenge_3_correct.ts": {
-		"added": [],
-		"removed": []
+		"added": [
+			2
+		],
+		"removed": [
+			2,
+			4,
+			5
+		]
 	},
 	"registerAdminChallenge_4.ts": {
 		"added": [
+			2,
 			5
 		],
 		"removed": [
+			2,
+			4,
+			5,
 			5
 		]
 	},
@@ -633,8 +684,8 @@
 	},
 	"restfulXssChallenge_1_correct.ts": {
 		"added": [
-			55,
-			56
+			58,
+			59
 		],
 		"removed": []
 	},
@@ -644,7 +695,6 @@
 	},
 	"restfulXssChallenge_3.ts": {
 		"added": [
-			39,
 			40,
 			41,
 			42,
@@ -657,7 +707,8 @@
 			49,
 			50,
 			51,
-			52
+			52,
+			53
 		],
 		"removed": []
 	},

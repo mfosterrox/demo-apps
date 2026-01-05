@@ -1,39 +1,16 @@
-import { Component, type OnDestroy, type OnInit } from '@angular/core'
-import { MatDialogRef } from '@angular/material/dialog'
-import { type Subscription } from 'rxjs'
-
-import { FeatureFlagService } from 'src/app/Services/feature-flag.service'
+import { Component, inject } from '@angular/core'
 import { LocalBackupService } from 'src/app/Services/local-backup.service'
+import { MatIconModule } from '@angular/material/icon'
+import { MatButtonModule } from '@angular/material/button'
+import { TranslateModule } from '@ngx-translate/core'
+import { MatDialogContent, MatDialogTitle, MatDialogActions, MatDialogClose } from '@angular/material/dialog'
 
 @Component({
   selector: 'score-board-additional-settings-dialog',
   templateUrl: './score-board-additional-settings-dialog.component.html',
-  styleUrls: ['./score-board-additional-settings-dialog.component.scss']
+  styleUrls: ['./score-board-additional-settings-dialog.component.scss'],
+  imports: [MatDialogContent, MatDialogTitle, TranslateModule, MatButtonModule, MatIconModule, MatDialogActions, MatDialogClose]
 })
-export class ScoreBoardAdditionalSettingsDialogComponent
-implements OnInit, OnDestroy {
-  public scoreBoardVersion: null | 'v1' | 'v2' = null
+export class ScoreBoardAdditionalSettingsDialogComponent {  localBackupService = inject(LocalBackupService);
 
-  private readonly subscriptions: Subscription[] = []
-
-  constructor (
-    public dialogRef: MatDialogRef<ScoreBoardAdditionalSettingsDialogComponent>,
-    public featureFlagService: FeatureFlagService,
-    public localBackupService: LocalBackupService
-  ) {}
-
-  async ngOnInit () {
-    const subscription = this.featureFlagService.defaultScoreBoard$.subscribe(
-      (version) => {
-        this.scoreBoardVersion = version
-      }
-    )
-    this.subscriptions.push(subscription)
-  }
-
-  ngOnDestroy () {
-    for (const subscription of this.subscriptions) {
-      subscription.unsubscribe()
-    }
-  }
 }

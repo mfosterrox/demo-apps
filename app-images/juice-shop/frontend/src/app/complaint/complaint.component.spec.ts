@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2023 Bjoern Kimminich & the OWASP Juice Shop contributors.
+ * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
  * SPDX-License-Identifier: MIT
  */
 
@@ -18,8 +18,9 @@ import { type ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angula
 import { ComplaintComponent } from './complaint.component'
 import { of, throwError } from 'rxjs'
 
-import { HttpClientTestingModule } from '@angular/common/http/testing'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { EventEmitter } from '@angular/core'
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 
 describe('ComplaintComponent', () => {
   let component: ComplaintComponent
@@ -40,22 +41,21 @@ describe('ComplaintComponent', () => {
     translateService.onDefaultLangChange = new EventEmitter()
 
     TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule,
-        ReactiveFormsModule,
+      imports: [ReactiveFormsModule,
         FileUploadModule,
         TranslateModule.forRoot(),
         BrowserAnimationsModule,
         MatCardModule,
         MatFormFieldModule,
         MatInputModule,
-        MatButtonModule
-      ],
-      declarations: [ComplaintComponent],
+        MatButtonModule,
+        ComplaintComponent],
       providers: [
         { provide: UserService, useValue: userService },
         { provide: ComplaintService, useValue: complaintService },
-        { provide: TranslateService, useValue: translateService }
+        { provide: TranslateService, useValue: translateService },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     })
       .compileComponents()
@@ -83,7 +83,7 @@ describe('ComplaintComponent', () => {
   })
 
   it('should have a message of maximum 160 characters', () => {
-    let str: string = ''
+    let str = ''
     for (let i = 0; i < 161; i++) {
       str += 'a'
     }
@@ -130,7 +130,7 @@ describe('ComplaintComponent', () => {
   })
 
   it('should begin uploading file if it has been added on saving', fakeAsync(() => {
-    component.uploader.queue[0] = new FileItem(component.uploader, new File([''], 'file.pdf', { type: 'application/pdf' }), {})
+    component.uploader.queue[0] = new FileItem(component.uploader, new File([''], 'file.pdf', { type: 'application/pdf' }), { url: '' })
     spyOn(component.uploader.queue[0], 'upload')
     component.save()
     expect(component.uploader.queue[0].upload).toHaveBeenCalled()

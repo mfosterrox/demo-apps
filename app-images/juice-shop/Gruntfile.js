@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2023 Bjoern Kimminich & the OWASP Juice Shop contributors.
+ * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
  * SPDX-License-Identifier: MIT
  */
 
@@ -33,6 +33,7 @@ module.exports = function (grunt) {
         files: [
           {
             src: [
+              '.well-known/**',
               'LICENSE',
               '*.md',
               'package.json',
@@ -69,8 +70,8 @@ module.exports = function (grunt) {
   })
 
   grunt.registerTask('checksum', 'Create .md5 checksum files', function () {
-    const fs = require('fs')
-    const crypto = require('crypto')
+    const fs = require('node:fs')
+    const crypto = require('node:crypto')
     fs.readdirSync('dist/').forEach(file => {
       const buffer = fs.readFileSync('dist/' + file)
       const md5 = crypto.createHash('md5')

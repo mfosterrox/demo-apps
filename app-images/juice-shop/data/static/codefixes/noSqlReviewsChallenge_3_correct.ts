@@ -1,4 +1,4 @@
-module.exports = function productReviews () {
+export function updateProductReviews () {
   return (req: Request, res: Response, next: NextFunction) => {
     const user = security.authenticatedUsers.from(req)
 
@@ -7,7 +7,7 @@ module.exports = function productReviews () {
       return
     }
 
-    db.reviews.update(
+    db.reviewsCollection.update(
       { _id: req.body.id },
       { $set: { message: req.body.message } }
     ).then(

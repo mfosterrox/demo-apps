@@ -1,21 +1,24 @@
 /*
- * Copyright (c) 2014-2023 Bjoern Kimminich & the OWASP Juice Shop contributors.
+ * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
  * SPDX-License-Identifier: MIT
  */
 
+import { Component, EventEmitter, NgZone, type OnInit, Output, inject } from '@angular/core'
 import { environment } from '../../environments/environment'
 import { ChallengeService } from '../Services/challenge.service'
 import { UserService } from '../Services/user.service'
 import { AdministrationService } from '../Services/administration.service'
 import { ConfigurationService } from '../Services/configuration.service'
-import { Component, EventEmitter, NgZone, type OnInit, Output } from '@angular/core'
-import { CookieService } from 'ngx-cookie'
-import { TranslateService } from '@ngx-translate/core'
-import { Router } from '@angular/router'
+import { CookieService } from 'ngy-cookie'
+import { TranslateService, TranslateModule } from '@ngx-translate/core'
+import { Router, RouterLink } from '@angular/router'
 import { SocketIoService } from '../Services/socket-io.service'
 import { LanguagesService } from '../Services/languages.service'
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { BasketService } from '../Services/basket.service'
+import { FormsModule } from '@angular/forms'
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatInputModule } from '@angular/material/input'
 
 import {
   faBomb,
@@ -42,61 +45,106 @@ import { faGithub } from '@fortawesome/free-brands-svg-icons'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { LoginGuard } from '../app.guard'
 import { roles } from '../roles'
+import { MatDivider } from '@angular/material/divider'
+import { MatRadioButton } from '@angular/material/radio'
+
+import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu'
+import { MatSearchBarComponent } from '../mat-search-bar/mat-search-bar.component'
+
+import { MatIconModule } from '@angular/material/icon'
+import { MatTooltip } from '@angular/material/tooltip'
+import { MatButtonModule } from '@angular/material/button'
+
+import { MatToolbar, MatToolbarRow } from '@angular/material/toolbar'
 
 library.add(faLanguage, faSearch, faSignInAlt, faSignOutAlt, faComment, faBomb, faTrophy, faInfoCircle, faShoppingCart, faUserSecret, faRecycle, faMapMarker, faUserCircle, faGithub, faComments, faThermometerEmpty, faThermometerQuarter, faThermometerHalf, faThermometerThreeQuarters, faThermometerFull)
 
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.scss']
+  styleUrls: ['./navbar.component.scss'],
+  imports: [
+    MatToolbar,
+    MatToolbarRow,
+    MatButtonModule,
+    MatTooltip,
+    MatIconModule,
+    RouterLink,
+    MatSearchBarComponent,
+    MatMenuTrigger,
+    MatMenu,
+    MatMenuItem,
+    MatRadioButton,
+    TranslateModule,
+    MatDivider,
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule
+  ]
 })
 export class NavbarComponent implements OnInit {
-  public userEmail: string = ''
-  public languages: any = []
-  public selectedLanguage: string = 'placeholder'
-  public version: string = ''
-  public applicationName: string = 'OWASP Juice Shop'
-  public showGitHubLink: boolean = true
-  public logoSrc: string = 'assets/public/images/JuiceShop_Logo.png'
-  public scoreBoardVisible: boolean = false
-  public shortKeyLang: string = 'placeholder'
+  private readonly administrationService = inject(AdministrationService);
+  private readonly challengeService = inject(ChallengeService);
+  private readonly configurationService = inject(ConfigurationService);
+  private readonly userService = inject(UserService);
+  private readonly ngZone = inject(NgZone);
+  private readonly cookieService = inject(CookieService);
+  private readonly router = inject(Router);
+  private readonly translate = inject(TranslateService);
+  private readonly io = inject(SocketIoService);
+  private readonly langService = inject(LanguagesService);
+  private readonly loginGuard = inject(LoginGuard);
+  private readonly snackBar = inject(MatSnackBar);
+  private readonly basketService = inject(BasketService);
+
+  public userEmail = ''
+  public languages: any[] = []
+  public filteredLanguages: any[] = []
+  public languageSearchQuery = ''
+  public selectedLanguage = 'placeholder'
+  public version = ''
+  public applicationName = 'OWASP Juice Shop'
+  public showGitHubLink = true
+  public logoSrc = 'assets/public/images/JuiceShop_Logo.png'
+  public scoreBoardVisible = false
+  public shortKeyLang = 'placeholder'
   public itemTotal = 0
 
   @Output() public sidenavToggle = new EventEmitter()
 
-  constructor (private readonly administrationService: AdministrationService, private readonly challengeService: ChallengeService,
-    private readonly configurationService: ConfigurationService, private readonly userService: UserService, private readonly ngZone: NgZone,
-    private readonly cookieService: CookieService, private readonly router: Router, private readonly translate: TranslateService,
-    private readonly io: SocketIoService, private readonly langService: LanguagesService, private readonly loginGuard: LoginGuard,
-    private readonly snackBar: MatSnackBar, private readonly basketService: BasketService) { }
-
-  ngOnInit () {
+  ngOnInit (): void {
     this.getLanguages()
     this.basketService.getItemTotal().subscribe(x => (this.itemTotal = x))
-    this.administrationService.getApplicationVersion().subscribe((version: any) => {
-      if (version) {
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        this.version = `v${version}`
-      }
-    }, (err) => { console.log(err) })
+    this.administrationService.getApplicationVersion().subscribe({
+      next: (version: any) => {
+        if (version) {
 
-    this.configurationService.getApplicationConfiguration().subscribe((config: any) => {
-      if (config?.application?.name) {
-        this.applicationName = config.application.name
-      }
-      if (config?.application) {
-        this.showGitHubLink = config.application.showGitHubLinks
-      }
-
-      if (config?.application?.logo) {
-        let logo: string = config.application.logo
-
-        if (logo.substring(0, 4) === 'http') {
-          logo = decodeURIComponent(logo.substring(logo.lastIndexOf('/') + 1))
+          this.version = `v${version}`
         }
-        this.logoSrc = 'assets/public/images/' + logo
-      }
-    }, (err) => { console.log(err) })
+      },
+      error: (err) => { console.log(err) }
+    })
+
+    this.configurationService.getApplicationConfiguration().subscribe({
+      next: (config: any) => {
+        if (config?.application?.name) {
+          this.applicationName = config.application.name
+        }
+        if (config?.application) {
+          this.showGitHubLink = config.application.showGitHubLinks
+        }
+
+        if (config?.application?.logo) {
+          let logo: string = config.application.logo
+
+          if (logo.substring(0, 4) === 'http') {
+            logo = decodeURIComponent(logo.substring(logo.lastIndexOf('/') + 1))
+          }
+          this.logoSrc = 'assets/public/images/' + logo
+        }
+      },
+      error: (err) => { console.log(err) }
+    })
 
     if (localStorage.getItem('token')) {
       this.getUserDetails()
@@ -123,6 +171,33 @@ export class NavbarComponent implements OnInit {
     })
   }
 
+  filterLanguages (): void {
+    if (!this.languageSearchQuery) {
+      this.filteredLanguages = [...this.languages]
+      return
+    }
+
+    const query = this.languageSearchQuery.toLowerCase()
+    this.filteredLanguages = this.languages.filter((lang: any) => {
+      // Filter by language name
+      if (lang.lang.toLowerCase().includes(query)) {
+        return true
+      }
+
+      // Filter by language key (e.g., 'en', 'fr', 'hi')
+      if (lang.key.toLowerCase().includes(query)) {
+        return true
+      }
+
+      // Filter by any additional language properties if needed
+      if (lang.shortKey?.toLowerCase()?.includes(query)) {
+        return true
+      }
+
+      return false
+    })
+  }
+
   checkLanguage () {
     if (this.cookieService.get('language')) {
       const langKey = this.cookieService.get('language')
@@ -146,9 +221,12 @@ export class NavbarComponent implements OnInit {
   }
 
   getUserDetails () {
-    this.userService.whoAmI().subscribe((user: any) => {
-      this.userEmail = user.email
-    }, (err) => { console.log(err) })
+    this.userService.whoAmI().subscribe({
+      next: (user: any) => {
+        this.userEmail = user.email
+      },
+      error: (err) => { console.log(err) }
+    })
   }
 
   isLoggedIn () {
@@ -156,7 +234,7 @@ export class NavbarComponent implements OnInit {
   }
 
   logout () {
-    this.userService.saveLastLoginIp().subscribe((user: any) => { this.noop() }, (err) => { console.log(err) })
+    this.userService.saveLastLoginIp().subscribe({ next: () => { this.noop() }, error: (err) => { console.log(err) } })
     localStorage.removeItem('token')
     this.cookieService.remove('token')
     sessionStorage.removeItem('bid')
@@ -173,9 +251,10 @@ export class NavbarComponent implements OnInit {
     if (this.languages.find((y: { key: string }) => y.key === langKey)) {
       const language = this.languages.find((y: { key: string }) => y.key === langKey)
       this.shortKeyLang = language.shortKey
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+
       const snackBarRef = this.snackBar.open(`Language has been changed to ${language.lang}`, 'Force page reload', {
-        duration: 5000
+        duration: 5000,
+        panelClass: ['mat-body']
       })
       snackBarRef.onAction().subscribe(() => {
         location.reload()
@@ -184,11 +263,14 @@ export class NavbarComponent implements OnInit {
   }
 
   getScoreBoardStatus () {
-    this.challengeService.find({ name: 'Score Board' }).subscribe((challenges: any) => {
-      this.ngZone.run(() => {
-        this.scoreBoardVisible = challenges[0].solved
-      })
-    }, (err) => { console.log(err) })
+    this.challengeService.find({ name: 'Score Board' }).subscribe({
+      next: (challenges: any) => {
+        this.ngZone.run(() => {
+          this.scoreBoardVisible = challenges[0].solved
+        })
+      },
+      error: (err) => { console.log(err) }
+    })
   }
 
   goToProfilePage () {
@@ -203,12 +285,13 @@ export class NavbarComponent implements OnInit {
     this.sidenavToggle.emit()
   }
 
-  // eslint-disable-next-line no-empty,@typescript-eslint/no-empty-function
+
   noop () { }
 
   getLanguages () {
-    this.langService.getLanguages().subscribe((res) => {
+    this.langService.getLanguages().subscribe((res: any[]) => {
       this.languages = res
+      this.filteredLanguages = Array.isArray(res) ? [...res] : []
       this.checkLanguage()
     })
   }

@@ -1,13 +1,16 @@
 /*
- * Copyright (c) 2014-2023 Bjoern Kimminich & the OWASP Juice Shop contributors.
+ * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
  * SPDX-License-Identifier: MIT
  */
 
-import frisby = require('frisby')
 import { expect } from '@jest/globals'
+import * as frisby from 'frisby'
+
+import { challenges } from '../../data/datacache'
+import * as security from '../../lib/insecurity'
+import * as utils from '../../lib/utils'
+
 const Joi = frisby.Joi
-const utils = require('../../lib/utils')
-const security = require('../../lib/insecurity')
 
 const API_URL = 'http://localhost:3000/api'
 const REST_URL = 'http://localhost:3000/rest'
@@ -190,7 +193,7 @@ describe('/api/Users', () => {
       })
   })
 
-  if (!utils.disableOnContainerEnv()) {
+  if (utils.isChallengeEnabled(challenges.persistedXssUserChallenge)) {
     it('POST new user with XSS attack in email address', () => {
       return frisby.post(`${API_URL}/Users`, {
         headers: jsonHeader,
@@ -241,24 +244,6 @@ describe('/api/Users/:id', () => {
   it('DELETE existing user is forbidden via API even when authenticated', () => {
     return frisby.del(`${API_URL}/Users/1`, { headers: authHeader })
       .expect('status', 401)
-  })
-})
-
-describe('/rest/user/authentication-details', () => {
-  it('GET all users decorated with attribute for authentication token', () => {
-    return frisby.get(`${REST_URL}/user/authentication-details`, { headers: authHeader })
-      .expect('status', 200)
-      .expect('jsonTypes', 'data.?', {
-        token: Joi.string()
-      })
-  })
-
-  it('GET all users with password replaced by asterisks', () => {
-    return frisby.get(`${REST_URL}/user/authentication-details`, { headers: authHeader })
-      .expect('status', 200)
-      .expect('json', 'data.?', {
-        password: '********************************'
-      })
   })
 })
 

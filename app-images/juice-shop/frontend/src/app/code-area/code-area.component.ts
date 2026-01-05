@@ -5,6 +5,7 @@ import {
   Output,
   EventEmitter
 } from '@angular/core'
+import { HighlightModule } from 'ngx-highlightjs'
 
 interface LineMarker {
   marked: boolean
@@ -14,13 +15,21 @@ interface LineMarker {
 @Component({
   selector: 'app-code-area',
   templateUrl: './code-area.component.html',
-  styleUrls: ['./code-area.component.scss']
+  styleUrls: ['./code-area.component.scss'],
+  imports: [HighlightModule]
 })
 export class CodeAreaComponent implements OnInit {
+  private _code = ''
   @Input('code')
-  public code: string = ''
+  get code (): string {
+    return this._code
+  }
 
-  @Input('vulnLines')
+  set code (value: string) {
+    this._code = value || ''
+  }
+
+  @Input()
   public vulnLines: number[]
 
   public lineMarkers: LineMarker[]

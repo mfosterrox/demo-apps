@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2014-2023 Bjoern Kimminich & the OWASP Juice Shop contributors.
+ * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
  * SPDX-License-Identifier: MIT
  */
 
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
-import { HttpClientTestingModule } from '@angular/common/http/testing'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { MatCardModule } from '@angular/material/card'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { type ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/core/testing'
@@ -22,6 +22,7 @@ import { MatDialogModule } from '@angular/material/dialog'
 import { PaymentMethodComponent } from './payment-method.component'
 import { EventEmitter } from '@angular/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 
 describe('PaymentMethodComponent', () => {
   let component: PaymentMethodComponent
@@ -43,11 +44,8 @@ describe('PaymentMethodComponent', () => {
     snackBar = jasmine.createSpyObj('MatSnackBar', ['open'])
 
     TestBed.configureTestingModule({
-      imports: [
-        TranslateModule.forRoot(),
-        HttpClientTestingModule,
+      imports: [TranslateModule.forRoot(),
         ReactiveFormsModule,
-
         BrowserAnimationsModule,
         MatCardModule,
         MatTableModule,
@@ -56,13 +54,14 @@ describe('PaymentMethodComponent', () => {
         MatExpansionModule,
         MatDividerModule,
         MatRadioModule,
-        MatDialogModule
-      ],
-      declarations: [PaymentMethodComponent],
+        MatDialogModule,
+        PaymentMethodComponent],
       providers: [
         { provide: PaymentService, useValue: paymentService },
         { provide: TranslateService, useValue: translateService },
-        { provide: MatSnackBar, useValue: snackBar }
+        { provide: MatSnackBar, useValue: snackBar },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     })
       .compileComponents()
@@ -148,10 +147,12 @@ describe('PaymentMethodComponent', () => {
   it('card number should be in the range [1000000000000000, 9999999999999999]', () => {
     component.numberControl.setValue(1111110)
     expect(component.numberControl.valid).toBeFalsy()
-    // eslint-disable-next-line @typescript-eslint/no-loss-of-precision
+
+    // eslint-disable-next-line no-loss-of-precision
     component.numberControl.setValue(99999999999999999)
     expect(component.numberControl.valid).toBeFalsy()
-    // eslint-disable-next-line @typescript-eslint/no-loss-of-precision
+
+    // eslint-disable-next-line no-loss-of-precision
     component.numberControl.setValue(9999999999999999)
     expect(component.numberControl.valid).toBe(true)
     component.numberControl.setValue(1234567887654321)

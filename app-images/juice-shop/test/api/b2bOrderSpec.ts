@@ -1,19 +1,20 @@
 /*
- * Copyright (c) 2014-2023 Bjoern Kimminich & the OWASP Juice Shop contributors.
+ * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
  * SPDX-License-Identifier: MIT
  */
+import * as frisby from 'frisby'
 
-import frisby = require('frisby')
+import { challenges } from '../../data/datacache'
+import * as utils from '../../lib/utils'
+import * as security from '../../lib/insecurity'
 const Joi = frisby.Joi
-const utils = require('../../lib/utils')
-const security = require('../../lib/insecurity')
 
 const API_URL = 'http://localhost:3000/b2b/v2/orders'
 
 const authHeader = { Authorization: 'Bearer ' + security.authorize(), 'content-type': 'application/json' }
 
 describe('/b2b/v2/orders', () => {
-  if (!utils.disableOnContainerEnv()) {
+  if (utils.isChallengeEnabled(challenges.rceChallenge) || utils.isChallengeEnabled(challenges.rceOccupyChallenge)) {
     it('POST endless loop exploit in "orderLinesData" will raise explicit error', () => {
       return frisby.post(API_URL, {
         headers: authHeader,

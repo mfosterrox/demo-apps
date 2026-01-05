@@ -288,6 +288,24 @@ build-tag-and-push:
 	make build-images
 	make push-images
 
+build-check-tag-push:
+	@echo "========================================================="
+	@echo "Starting build-check-tag-push pipeline..."
+	@echo "This will:"
+	@echo "  1. Build all images"
+	@echo "  2. Check that containers can run"
+	@echo "  3. Push images to registry"
+	@echo "========================================================="
+	@echo ""
+	@make build-images && \
+	make check && \
+	make push-images && \
+	echo "" && \
+	echo "=========================================================" && \
+	echo "✓ Pipeline completed successfully!" && \
+	echo "  All images built, checked, and pushed" && \
+	echo "========================================================="
+
 pull:
 	@echo "========================================================="
 	@echo "Starting pull process for all applications..."

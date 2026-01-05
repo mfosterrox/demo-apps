@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2014-2023 Bjoern Kimminich & the OWASP Juice Shop contributors.
+ * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
  * SPDX-License-Identifier: MIT
  */
 
@@ -7,27 +7,27 @@ $bg-chat: rgba(0, 0, 0, 0.3);
 
 mat-card {
   height: auto;
-  min-width: 320px;
-  width: 60%;
+  min-width: 240px;
+  width: 70%;
+}
+
+.chat-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.chat-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
 }
 
 mat-form-field {
   display: block;
-  height: 0;
   margin: auto;
   width: 70%;
-}
-
-.form-container {
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-
-#submitButton {
-  margin-left: 20%;
-  margin-top: 30px;
-  width: 60%;
 }
 
 #chat-container {
@@ -38,11 +38,8 @@ mat-form-field {
 }
 
 #chat-box {
-  align-content: space-between;
   background-color: $bg-chat;
-  display: block;
   display: flex;
-  flex-direction: column;
   height: 650px;
   margin-left: auto;
   margin-right: auto;
@@ -50,12 +47,8 @@ mat-form-field {
   width: 80%;
 }
 
-.form-wrapper {
-  font-size: 10px;
-}
-
 #chat-window {
-  height: 90%;
+  flex: 1;
   overflow-y: auto;
   padding: 20px;
 
@@ -64,18 +57,15 @@ mat-form-field {
     width: 20px;
   }
 
-  /* Track */
   ::-webkit-scrollbar-track {
     background: none;
   }
 
-  /* Handle */
   ::-webkit-scrollbar-thumb {
     background: #f00;
     border-radius: 10px;
   }
 
-  /* Handle on hover */
   ::-webkit-scrollbar-thumb:hover {
     background: #b30000;
   }
@@ -83,9 +73,14 @@ mat-form-field {
 
 .message-box-container {
   border-top: solid 1px #fff;
-  height: 10%;
+  bottom: 0;
+  margin-bottom: -20px;
+  position: sticky;
+}
+
+.form-wrapper {
+  font-size: 10px;
   padding-top: 15px;
-  width: auto;
 }
 
 .message-container {
@@ -153,4 +148,50 @@ mat-form-field {
 
 .powered-by {
   font-size: xx-small;
+}
+
+.center-container {
+  align-items: stretch;
+  display: flex;
+  justify-content: center;
+}
+
+
+@media (max-width: 599.98px) {
+  mat-card {
+    width: 90%;
+  }
+
+  #chat-container {
+    width: 100%;
+  }
+}
+
+@media (max-width: 959.98px) {
+  .message-container {
+    display: grid;
+    grid-auto-rows: auto;
+    margin-right: 0;
+  }
+
+  .profile-image,
+  .juicy-chat-bot-image {
+    grid-row: 2;
+    margin-bottom: 20px;
+    margin-top: 0;
+  }
+
+  .profile-image {
+    justify-self: end;
+  }
+
+  .speech-bubble-right,
+  .speech-bubble-left {
+    float: none;
+    width: fit-content;
+  }
+
+  .speech-bubble-right {
+    justify-self: end;
+  }
 }

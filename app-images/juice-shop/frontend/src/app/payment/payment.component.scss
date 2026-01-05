@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2014-2023 Bjoern Kimminich & the OWASP Juice Shop contributors.
+ * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
  * SPDX-License-Identifier: MIT
  */
 
@@ -13,18 +13,24 @@ mat-form-field {
   margin-right: 20%;
 }
 
+.nav-section {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
 
-.btn-return {
-  display: block;
-  margin-left: 0;
-  margin-right: auto;
+.nav-text {
+  text-align: center;
+}
+
+.btn-return,
+.nextButton {
+  width: min-content;
 }
 
 .nextButton {
-  display: block;
-  margin-left: auto;
-  margin-right: 0;
-  margin-top: -37px;
+  justify-self: end;
 }
 
 mat-card {
@@ -35,7 +41,7 @@ mat-card {
   flex-basis: 0;
 }
 
-.mat-raised-button {
+.mat-mdc-raised-button {
   margin-right: 3px;
 }
 
@@ -47,7 +53,7 @@ mat-card {
 }
 
 .card-title {
-  font-size: 15px;
+  font-size: 14px;
   line-height: 36px;
   vertical-align: middle;
 }
@@ -61,6 +67,55 @@ mat-card {
   margin-top: 12px;
 }
 
-.mat-card .mat-divider-horizontal {
+.mat-mdc-card .mat-divider-horizontal {
   position: relative !important;
+}
+
+.row {
+  align-items: center;
+  display: flex;
+}
+
+.col { min-width: 0; }
+
+.col-42 { flex: 0 0 42%;
+  max-width: 42%; }
+
+.col-38 { flex: 0 0 38%;
+  max-width: 38%; }
+
+.col-20 { flex: 0 0 20%;
+  max-width: 20%; }
+
+.col-34 { flex: 0 0 34%;
+  max-width: 34%; }
+
+.col-65 { flex: 0 0 65%;
+  max-width: 65%; }
+
+/* Stack the payment options on < lg */
+.responsive-row { flex-wrap: nowrap; }
+@media (max-width: 1279.98px) {
+  .responsive-row { flex-direction: column; }
+
+  .responsive-row .col { flex: 0 0 100%;
+    max-width: 100%; }
+  .fill-remaining-space { display: none; }
+}
+
+
+@media (max-width: 959.98px) {
+  .mat-own-card {
+    margin-left: 10%;
+    margin-right: 10%;
+  }
+
+  .nav-text {
+    grid-column: -1 / 1;
+    grid-row: 1;
+  }
+
+  .nextButton {
+    grid-column: 3 / -1;
+  }
 }

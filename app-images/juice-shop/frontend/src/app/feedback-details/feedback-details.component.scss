@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2014-2023 Bjoern Kimminich & the OWASP Juice Shop contributors.
+ * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
  * SPDX-License-Identifier: MIT
  */
 
@@ -14,4 +14,15 @@ mat-divider {
 mat-dialog-content {
   max-width: 320px;
   min-width: 280px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-line {
+  align-items: baseline;
+  display: flex;
+  gap: 10px;
 }

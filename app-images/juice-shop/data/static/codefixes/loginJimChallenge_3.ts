@@ -1,6 +1,6 @@
 import {BasketModel} from "../../../models/basket";
 
-module.exports = function login () {
+export function login () {
   function afterLogin (user: { data: User, bid: number }, res: Response, next: NextFunction) {
     BasketModel.findOrCreate({ where: { UserId: user.data.id } })
       .then(([basket]: [BasketModel, boolean]) => {
@@ -16,7 +16,7 @@ module.exports = function login () {
   return (req: Request, res: Response, next: NextFunction) => {
     models.sequelize.query(`SELECT * FROM Users WHERE email = ? AND password = ? AND deletedAt IS NULL`,
       { replacements: [ req.body.email, req.body.password ], model: models.User, plain: true })
-      .then((authenticatedUser: { data: User }) => {
+      .then((authenticatedUser) => {
         const user = utils.queryResultToJson(authenticatedUser)
         if (user.data?.id && user.data.totpSecret !== '') {
           res.status(401).json({

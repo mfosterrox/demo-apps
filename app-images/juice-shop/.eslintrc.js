@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2023 Bjoern Kimminich & the OWASP Juice Shop contributors.
+ * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
  * SPDX-License-Identifier: MIT
  */
 
@@ -21,6 +21,7 @@ module.exports = {
     project: './tsconfig.json'
   },
   ignorePatterns: [
+    '.eslintrc.js',
     'app/private/**',
     'vagrant/**',
     'frontend/**',
@@ -34,12 +35,11 @@ module.exports = {
       rules: {
         'no-void': 'off', // conflicting with recommendation from @typescript-eslint/no-floating-promises
         // FIXME warnings below this line need to be checked and fixed.
-        '@typescript-eslint/no-misused-promises': 'off',
         '@typescript-eslint/explicit-function-return-type': 'off',
-        '@typescript-eslint/restrict-plus-operands': 'off',
         '@typescript-eslint/strict-boolean-expressions': 'off',
-        '@typescript-eslint/restrict-template-expressions': 'off',
-        '@typescript-eslint/no-var-requires': 'off'
+        '@typescript-eslint/no-var-requires': 'off',
+        '@typescript-eslint/no-misused-promises': 'off',
+        '@typescript-eslint/no-unsafe-argument': 'off'
       }
     }
   ]

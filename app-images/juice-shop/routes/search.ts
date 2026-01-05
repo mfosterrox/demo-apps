@@ -1,22 +1,22 @@
 /*
- * Copyright (c) 2014-2023 Bjoern Kimminich & the OWASP Juice Shop contributors.
+ * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
  * SPDX-License-Identifier: MIT
  */
 
-import models = require('../models/index')
 import { type Request, type Response, type NextFunction } from 'express'
-import { UserModel } from '../models/user'
 
 import * as utils from '../lib/utils'
-const challengeUtils = require('../lib/challengeUtils')
-const challenges = require('../data/datacache').challenges
+import * as models from '../models/index'
+import { UserModel } from '../models/user'
+import { challenges } from '../data/datacache'
+import * as challengeUtils from '../lib/challengeUtils'
 
 class ErrorWithParent extends Error {
   parent: Error | undefined
 }
 
 // vuln-code-snippet start unionSqlInjectionChallenge dbSchemaChallenge
-module.exports = function searchProducts () {
+export function searchProducts () {
   return (req: Request, res: Response, next: NextFunction) => {
     let criteria: any = req.query.q === 'undefined' ? '' : req.query.q ?? ''
     criteria = (criteria.length <= 200) ? criteria : criteria.substring(0, 200)
@@ -44,7 +44,7 @@ module.exports = function searchProducts () {
         }
         if (challengeUtils.notSolved(challenges.dbSchemaChallenge)) {
           let solved = true
-          models.sequelize.query('SELECT sql FROM sqlite_master').then(([data]: any) => {
+          void models.sequelize.query('SELECT sql FROM sqlite_master').then(([data]: any) => {
             const tableDefinitions = utils.queryResultToJson(data)
             if (tableDefinitions.data?.length) {
               for (let i = 0; i < tableDefinitions.data.length; i++) {

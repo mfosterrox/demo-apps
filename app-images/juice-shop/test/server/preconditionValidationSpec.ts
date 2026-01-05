@@ -1,35 +1,37 @@
 /*
- * Copyright (c) 2014-2023 Bjoern Kimminich & the OWASP Juice Shop contributors.
+ * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
  * SPDX-License-Identifier: MIT
  */
 
-import chai = require('chai')
-const sinonChai = require('sinon-chai')
-const expect = chai.expect
-const net = require('net')
-chai.use(sinonChai)
+import chai from 'chai'
+import net from 'node:net'
+import semver from 'semver'
+import sinonChai from 'sinon-chai'
+import { engines as supportedEngines } from './../../package.json'
+import { checkIfRunningOnSupportedNodeVersion, checkIfPortIsAvailable } from '../../lib/startup/validatePreconditions'
 
-const semver = require('semver')
-const { checkIfRunningOnSupportedNodeVersion, checkIfPortIsAvailable } = require('../../lib/startup/validatePreconditions')
+const expect = chai.expect
+chai.use(sinonChai)
 
 describe('preconditionValidation', () => {
   describe('checkIfRunningOnSupportedNodeVersion', () => {
-    const supportedVersion = require('./../../package.json').engines.node
-
-    it('should define the supported semver range as 18 - 21', () => {
-      expect(supportedVersion).to.equal('18 - 21')
-      expect(semver.validRange(supportedVersion)).to.not.equal(null)
+    it('should define the supported semver range as 20 - 24', () => {
+      expect(supportedEngines.node).to.equal('20 - 24')
+      expect(semver.validRange(supportedEngines.node)).to.not.equal(null)
     })
 
     it('should accept a supported version', () => {
-      expect(checkIfRunningOnSupportedNodeVersion('21.0.0')).to.equal(true)
-      expect(checkIfRunningOnSupportedNodeVersion('20.0.0')).to.equal(true)
-      expect(checkIfRunningOnSupportedNodeVersion('19.6.0')).to.equal(true)
-      expect(checkIfRunningOnSupportedNodeVersion('18.1.0')).to.equal(true)
+      expect(checkIfRunningOnSupportedNodeVersion('24.2.0')).to.equal(true)
+      expect(checkIfRunningOnSupportedNodeVersion('23.11.1')).to.equal(true)
+      expect(checkIfRunningOnSupportedNodeVersion('22.16.0')).to.equal(true)
+      expect(checkIfRunningOnSupportedNodeVersion('21.7.3')).to.equal(true)
+      expect(checkIfRunningOnSupportedNodeVersion('20.19.2')).to.equal(true)
     })
 
     it('should fail for an unsupported version', () => {
-      expect(checkIfRunningOnSupportedNodeVersion('22.0.0')).to.equal(false)
+      expect(checkIfRunningOnSupportedNodeVersion('25.0.0')).to.equal(false)
+      expect(checkIfRunningOnSupportedNodeVersion('19.9.0')).to.equal(false)
+      expect(checkIfRunningOnSupportedNodeVersion('18.20.4')).to.equal(false)
       expect(checkIfRunningOnSupportedNodeVersion('17.3.0')).to.equal(false)
       expect(checkIfRunningOnSupportedNodeVersion('16.10.0')).to.equal(false)
       expect(checkIfRunningOnSupportedNodeVersion('15.9.0')).to.equal(false)

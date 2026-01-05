@@ -1,19 +1,30 @@
 /*
- * Copyright (c) 2014-2023 Bjoern Kimminich & the OWASP Juice Shop contributors.
+ * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
  * SPDX-License-Identifier: MIT
  */
 
 import { CodeSnippetService, type CodeSnippet } from '../Services/code-snippet.service'
-import { CodeFixesService, type Fixes } from '../Services/code-fixes.service'
-import { CookieService } from 'ngx-cookie'
+import { CodeFixesService } from '../Services/code-fixes.service'
+import { CookieService } from 'ngy-cookie'
 import { ChallengeService } from '../Services/challenge.service'
 import { VulnLinesService, type result } from '../Services/vuln-lines.service'
-import { Component, Inject, type OnInit } from '@angular/core'
+import { Component, type OnInit, inject } from '@angular/core'
 
-import { MAT_DIALOG_DATA } from '@angular/material/dialog'
-import { UntypedFormControl } from '@angular/forms'
+import { MAT_DIALOG_DATA, MatDialogTitle, MatDialogContent, MatDialogActions, MatDialogClose } from '@angular/material/dialog'
+import { UntypedFormControl, FormsModule } from '@angular/forms'
 import { ConfigurationService } from '../Services/configuration.service'
 import { type ThemePalette } from '@angular/material/core'
+import { MatIconButton, MatButtonModule } from '@angular/material/button'
+import { MatInputModule } from '@angular/material/input'
+import { MatFormFieldModule, MatLabel } from '@angular/material/form-field'
+
+import { MatCardModule } from '@angular/material/card'
+import { CodeFixesComponent } from '../code-fixes/code-fixes.component'
+import { MatIconModule } from '@angular/material/icon'
+import { TranslateModule } from '@ngx-translate/core'
+import { CodeAreaComponent } from '../code-area/code-area.component'
+
+import { MatTabGroup, MatTab, MatTabLabel } from '@angular/material/tabs'
 
 enum ResultState {
   Undecided,
@@ -35,48 +46,64 @@ export interface RandomFixes {
   selector: 'code-snippet',
   templateUrl: './code-snippet.component.html',
   styleUrls: ['./code-snippet.component.scss'],
-  host: { class: 'code-snippet' }
+  host: { class: 'code-snippet' },
+  imports: [MatDialogTitle, MatDialogContent, MatTabGroup, MatTab, CodeAreaComponent, TranslateModule, MatTabLabel, MatIconModule, CodeFixesComponent, MatDialogActions, MatCardModule, MatFormFieldModule, MatLabel, MatInputModule, FormsModule, MatIconButton, MatButtonModule, MatDialogClose]
 })
 export class CodeSnippetComponent implements OnInit {
+  dialogData = inject(MAT_DIALOG_DATA);
+  private readonly configurationService = inject(ConfigurationService);
+  private readonly codeSnippetService = inject(CodeSnippetService);
+  private readonly vulnLinesService = inject(VulnLinesService);
+  private readonly codeFixesService = inject(CodeFixesService);
+  private readonly challengeService = inject(ChallengeService);
+  private readonly cookieService = inject(CookieService);
+
   public snippet: CodeSnippet = null
   public fixes: string [] = null
   public selectedLines: number[]
-  public selectedFix: number = 0
+  public selectedFix = 0
   public tab: UntypedFormControl = new UntypedFormControl(0)
   public lock: ResultState = ResultState.Undecided
   public result: ResultState = ResultState.Undecided
   public hint: string = null
   public explanation: string = null
   public solved: Solved = { findIt: false, fixIt: false }
-  public showFeedbackButtons: boolean = true
+  public showFeedbackButtons = true
   public randomFixes: RandomFixes[] = []
 
-  constructor (@Inject(MAT_DIALOG_DATA) public dialogData: any, private readonly configurationService: ConfigurationService, private readonly codeSnippetService: CodeSnippetService, private readonly vulnLinesService: VulnLinesService, private readonly codeFixesService: CodeFixesService, private readonly challengeService: ChallengeService, private readonly cookieService: CookieService) { }
-
-  ngOnInit () {
-    this.configurationService.getApplicationConfiguration().subscribe((config) => {
-      this.showFeedbackButtons = config.challenges.showFeedbackButtons
-    }, (err) => { console.log(err) })
-
-    this.codeSnippetService.get(this.dialogData.key).subscribe((snippet) => {
-      this.snippet = snippet
-      this.solved.findIt = false
-      if (this.dialogData.codingChallengeStatus >= 1) {
-        this.result = ResultState.Right
-        this.lock = ResultState.Right
-        this.solved.findIt = true
-      }
-    }, (err) => {
-      this.snippet = { snippet: err.error }
+  ngOnInit (): void {
+    this.configurationService.getApplicationConfiguration().subscribe({
+      next: (config) => {
+        this.showFeedbackButtons = config.challenges.showFeedbackButtons
+      },
+      error: (err) => { console.log(err) }
     })
-    this.codeFixesService.get(this.dialogData.key).subscribe((fixes) => {
-      this.fixes = fixes.fixes
-      if (this.fixes) {
-        this.shuffle()
+
+    this.codeSnippetService.get(this.dialogData.key).subscribe({
+      next: (snippet) => {
+        this.snippet = snippet
+        this.solved.findIt = false
+        if (this.dialogData.codingChallengeStatus >= 1) {
+          this.result = ResultState.Right
+          this.lock = ResultState.Right
+          this.solved.findIt = true
+        }
+      },
+      error: (err) => {
+        this.snippet = { snippet: err.error }
       }
-      this.solved.fixIt = this.dialogData.codingChallengeStatus >= 2
-    }, () => {
-      this.fixes = null
+    })
+    this.codeFixesService.get(this.dialogData.key).subscribe({
+      next: (fixes) => {
+        this.fixes = fixes.fixes
+        if (this.fixes) {
+          this.shuffle()
+        }
+        this.solved.fixIt = this.dialogData.codingChallengeStatus >= 2
+      },
+      error: () => {
+        this.fixes = null
+      }
     })
   }
 
@@ -153,24 +180,30 @@ export class CodeSnippetComponent implements OnInit {
     if (verdict) {
       if (this.tab.value === 0) {
         this.solved.findIt = true
-        this.challengeService.continueCodeFindIt().subscribe((continueCode) => {
-          if (!continueCode) {
-            throw (new Error('Received invalid continue code from the server!'))
-          }
-          const expires = new Date()
-          expires.setFullYear(expires.getFullYear() + 1)
-          this.cookieService.put('continueCodeFindIt', continueCode, { expires })
-        }, (err) => { console.log(err) })
+        this.challengeService.continueCodeFindIt().subscribe({
+          next: (continueCode) => {
+            if (!continueCode) {
+              throw (new Error('Received invalid continue code from the server!'))
+            }
+            const expires = new Date()
+            expires.setFullYear(expires.getFullYear() + 1)
+            this.cookieService.put('continueCodeFindIt', continueCode, { expires })
+          },
+          error: (err) => { console.log(err) }
+        })
       } else {
         this.solved.fixIt = true
-        this.challengeService.continueCodeFixIt().subscribe((continueCode) => {
-          if (!continueCode) {
-            throw (new Error('Received invalid continue code from the server!'))
-          }
-          const expires = new Date()
-          expires.setFullYear(expires.getFullYear() + 1)
-          this.cookieService.put('continueCodeFixIt', continueCode, { expires })
-        }, (err) => { console.log(err) })
+        this.challengeService.continueCodeFixIt().subscribe({
+          next: (continueCode) => {
+            if (!continueCode) {
+              throw (new Error('Received invalid continue code from the server!'))
+            }
+            const expires = new Date()
+            expires.setFullYear(expires.getFullYear() + 1)
+            this.cookieService.put('continueCodeFixIt', continueCode, { expires })
+          },
+          error: (err) => { console.log(err) }
+        })
       }
       this.result = ResultState.Right
       this.lock = ResultState.Right

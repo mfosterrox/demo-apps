@@ -1,13 +1,13 @@
 /*
- * Copyright (c) 2014-2023 Bjoern Kimminich & the OWASP Juice Shop contributors.
+ * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
  * SPDX-License-Identifier: MIT
  */
 
-import frisby = require('frisby')
+import * as frisby from 'frisby'
 import { expect } from '@jest/globals'
 import config from 'config'
-import { initialize, bot } from '../../routes/chatbot'
-import fs from 'fs/promises'
+import { initializeChatbot, bot } from '../../routes/chatbot'
+import fs from 'node:fs/promises'
 import * as utils from '../../lib/utils'
 
 const URL = 'http://localhost:3000'
@@ -33,7 +33,7 @@ async function login ({ email, password }: { email: string, password: string }) 
 
 describe('/chatbot', () => {
   beforeAll(async () => {
-    await initialize()
+    await initializeChatbot()
     trainingData = JSON.parse(await fs.readFile(`data/chatbot/${utils.extractFilename(config.get('application.chatBot.trainingData'))}`, { encoding: 'utf8' }))
   })
 
@@ -52,7 +52,7 @@ describe('/chatbot', () => {
 
     it('GET bot state for authenticated users contains request for username', async () => {
       const { token } = await login({
-        email: `J12934@${config.get('application.domain')}`,
+        email: `J12934@${config.get<string>('application.domain')}`,
         password: '0Y8rMnww$*9VFYE§59-!Fg1L6t&6lB'
       })
 
@@ -73,7 +73,7 @@ describe('/chatbot', () => {
   describe('/respond', () => {
     it('Asks for username if not defined', async () => {
       const { token } = await login({
-        email: `J12934@${config.get('application.domain')}`,
+        email: `J12934@${config.get<string>('application.domain')}`,
         password: '0Y8rMnww$*9VFYE§59-!Fg1L6t&6lB'
       })
 
@@ -101,7 +101,7 @@ describe('/chatbot', () => {
 
     it('Returns greeting if username is defined', async () => {
       if (bot == null) {
-        throw new Error('Bot not initialized')
+        throw new Error('Bot not initializeChatbotd')
       }
       const { token } = await login({
         email: 'bjoern.kimminich@gmail.com',
@@ -133,7 +133,7 @@ describe('/chatbot', () => {
 
     it('Returns proper response for registered user', async () => {
       if (bot == null) {
-        throw new Error('Bot not initialized')
+        throw new Error('Bot not initializeChatbotd')
       }
       const { token } = await login({
         email: 'bjoern.kimminich@gmail.com',
@@ -201,7 +201,7 @@ describe('/chatbot', () => {
 
     it('Greets back registered user after being told username', async () => {
       const { token } = await login({
-        email: `stan@${config.get('application.domain')}`,
+        email: `stan@${config.get<string>('application.domain')}`,
         password: 'ship coffin krypt cross estate supply insurance asbestos souvenir'
       })
       await frisby.setup({
@@ -283,7 +283,7 @@ describe('/chatbot', () => {
           'Content-Type': 'application/json'
         },
         body: {
-          email: `chatbot-testuser@${config.get('application.domain')}`,
+          email: `chatbot-testuser@${config.get<string>('application.domain')}`,
           password: 'testtesttest',
           username: '"',
           role: 'admin'
@@ -291,7 +291,7 @@ describe('/chatbot', () => {
       }).promise()
 
       const { token } = await login({
-        email: `chatbot-testuser@${config.get('application.domain')}`,
+        email: `chatbot-testuser@${config.get<string>('application.domain')}`,
         password: 'testtesttest'
       })
 

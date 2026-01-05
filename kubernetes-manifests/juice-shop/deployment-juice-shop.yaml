@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: juice-shop
-          image: quay.io/mfoster/juice-shop:0.1.0
+          image: bkimminich/juice-shop
           ports:
             - containerPort: 3000
           securityContext:

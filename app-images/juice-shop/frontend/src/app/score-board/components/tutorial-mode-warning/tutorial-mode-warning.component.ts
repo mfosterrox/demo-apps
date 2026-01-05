@@ -2,10 +2,14 @@ import { Component, Input, type OnChanges } from '@angular/core'
 
 import { type EnrichedChallenge } from '../../types/EnrichedChallenge'
 import { type Config } from 'src/app/Services/configuration.service'
+import { TranslateModule } from '@ngx-translate/core'
+import { MatIconModule } from '@angular/material/icon'
+import { WarningCardComponent } from '../warning-card/warning-card.component'
 
 @Component({
   selector: 'tutorial-mode-warning',
-  templateUrl: './tutorial-mode-warning.component.html'
+  templateUrl: './tutorial-mode-warning.component.html',
+  imports: [WarningCardComponent, MatIconModule, TranslateModule]
 })
 export class TutorialModeWarningComponent implements OnChanges {
   @Input()

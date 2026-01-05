@@ -1,6 +1,9 @@
-import { Component, Input, type OnChanges, type OnInit, type SimpleChanges } from '@angular/core'
+import { Component, Input, type OnChanges, type OnInit } from '@angular/core'
 
 import { type EnrichedChallenge } from '../../types/EnrichedChallenge'
+import { TranslateModule } from '@ngx-translate/core'
+
+import { ScoreCardComponent } from '../score-card/score-card.component'
 
 interface DifficultySummary {
   difficulty: 0 | 1 | 2 | 3 | 4 | 5 | 6
@@ -9,7 +12,7 @@ interface DifficultySummary {
 }
 
 // interface doesn't work here
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+ 
 type DifficultySummaries = Record<number, DifficultySummary>
 
 const INITIAL_SUMMARIES: Readonly<DifficultySummaries> = Object.freeze({
@@ -24,7 +27,8 @@ const INITIAL_SUMMARIES: Readonly<DifficultySummaries> = Object.freeze({
 @Component({
   selector: 'difficulty-overview-score-card',
   templateUrl: './difficulty-overview-score-card.component.html',
-  styleUrls: ['./difficulty-overview-score-card.component.scss']
+  styleUrls: ['./difficulty-overview-score-card.component.scss'],
+  imports: [ScoreCardComponent, TranslateModule]
 })
 export class DifficultyOverviewScoreCardComponent implements OnInit, OnChanges {
   @Input()
@@ -47,7 +51,7 @@ export class DifficultyOverviewScoreCardComponent implements OnInit, OnChanges {
     this.updatedNumberOfSolvedChallenges()
   }
 
-  ngOnChanges (changes: SimpleChanges): void {
+  ngOnChanges (): void {
     this.updatedNumberOfSolvedChallenges()
   }
 

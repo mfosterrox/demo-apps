@@ -21,6 +21,8 @@ mentioned or used!
 * [Summits & Open Source Events](#summits--open-source-events)
   + [Google Summer of Code](#googlesummerofcode)
 * [Conference and Meetup Appearances](#conference-and-meetup-appearances)
+  - [2025](#2025)
+  - [2024](#2024)
   - [2023](#2023)
   - [2022](#2022)
   - [2021](#2021)
@@ -133,6 +135,7 @@ mentioned or used!
 
 ### Blogs & Articles
 
+* Blog post on [A Tester's Journey](https://www.lisihocke.com/) by Lisi Hocke: [Open Security Conference 2024 - A Memorable Beginning](https://www.lisihocke.com/2024/10/open-security-conference-2024-a-memorable-beginning.html)
 * Blog post on [OWASP.org](https://owasp.org) by Björn Kimminich: [OWASP Juice Shop 2023 achievements and beyond](https://owasp.org/blog/2023/10/10/juice-shop-2023.html)
 * Article on [Cobalt.io Developer Best Practices](https://developer.cobalt.io/bestpractices/): [Validate User Input](https://developer.cobalt.io/bestpractices/input-validation/)
 * Blog post (:de:) on [Dev-Insider](https://www.dev-insider.de/): [OWASP Juice Shop lädt zum Hacken ein](https://www.dev-insider.de/owasp-juice-shop-laedt-zum-hacken-ein-a-968485/) :godmode:
@@ -279,6 +282,10 @@ mentioned or used!
 
 ### [Google Summer of Code](http://owasp.org/gsoc)
 
+* Student project from
+  [Google Summer of Code 2025](https://summerofcode.withgoogle.com/archive/2025/projects)
+    * [Juice Shop side-project rennovation](https://summerofcode.withgoogle.com/organizations/owasp-foundation/projects/details/rzlkFqYj)
+      by Harsh Kumar (mentored by Jannik Hollenbach and Björn Kimminich)
 * Student projects from
   [Google Summer of Code 2023](https://summerofcode.withgoogle.com/archive/2023/projects)
   * [Companion Guide Tech Stack](https://summerofcode.withgoogle.com/organizations/owasp-foundation/projects/details/h2der3Mf)
@@ -312,21 +319,37 @@ mentioned or used!
 
 > Upcoming events are marked with :date:. The availability of link destinations for past events cannot be guaranteed. 
 
+#### 2025
+
+* [News from the Juice Shop ecosystem](https://god.owasp.de/2025/program-detail.html?talk=talkTwentytwo) by Björn Kimminich, German OWASP Day 2025, Düsseldorf, 26.11.2025 ([media.ccc](https://media.ccc.de/v/god2025-56495-news-from-the-juice-shop-e))
+* [All the WAF power to the devs - why it reduces friction… and where it backfires](https://god.owasp.de/2025/program-detail.html?talk=talkSix) by Lukas Funk, German OWASP Day 2025, Düsseldorf, 26.11.2025 :mega: [media.ccc](https://media.ccc.de/v/god2025-56478-all-the-waf-power-to-the-d)
+* [OWASP Juice Shop Workshop](https://www.meetup.com/it-security-kassel/events/306942921)
+  with Björn Kimminich, [93. IT-Security-Meetup Kassel](https://www.meetup.com/it-security-kassel/), 10.09.2025
+* [OWASP Juice Shop Demo: Your vitamin shot for security awareness & education](https://owasp2025globalappseceu.sched.com/event/1yOPV/owasp-juice-shop-demo-your-vitamin-shot-for-security-awareness-education) with Björn Kimminich, [OWASP Global AppSec EU 2025, Barcelona](https://owasp.glueup.com/event/owasp-global-appsec-eu-2025-123983), 29.05.2025
+* [OWASP Juice Shop Demo: Your vitamin shot for security awareness & education](https://owasp2025globalappseceu.sched.com/event/1yPXh/owasp-juice-shop-demo-your-vitamin-shot-for-security-awareness-education) with Björn Kimminich, [OWASP Global AppSec EU 2025, Barcelona](https://owasp.glueup.com/event/owasp-global-appsec-eu-2025-123983), 30.05.2025
+
 #### 2024
 
-* :date: [OWASP Juice Shop - An Open Source Software and security Fairytale](https://ndc-security.com/agenda/owasp-juice-shop-an-open-source-software-and-security-fairytale-09mg/09ko186cud8) by Björn Kimminich, [NDC Security 2024](https://ndc-security.com/), 11.01.2024
+* [OWASP Juice Shop: Advanced Demos & For-fun CTF](https://god.owasp.de/2024/program-detail.html?talk=trainingOne) with Björn Kimminich & Jannik Hollenbach, [German OWASP Day 2024](https://god.owasp.de/2024), 12.11.2024
+* [OWASP Juice Shop 10th anniversary: Is it still fresh?](https://god.owasp.de/2024/program-detail.html?talk=talkOne) by Björn Kimminich, [German OWASP Day 2024](https://god.owasp.de/2024), 13.11.2024
+* [OWASP Juice Shop 10th anniversary: Is it still fresh?](https://opensecurityconference.org/conference/keynotes) keynote by Björn Kimminich, [Open Security Conference](https://opensecurityconference.org/), 04.10.2024
+* [DSOMM & Juice Shop User Day](https://owasp2024globalappsecsanfra.sched.com/event/1gk01/juice-shop-dsomm-user-day-2024) before [OWASP 2024 Global AppSec San Francisco](https://sf.globalappsec.org/) with Timo Pagel, Jannik Hollenbach & Björn Kimminich, 25.09.2024
+* [OWASP Juice Shop](https://owasp2024globalappsecsanfra.sched.com/event/1ivEu/owasp-juiceshop) talk in Project Track of [OWASP 2024 Global AppSec San Francisco](https://sf.globalappsec.org/) by Björn Kimminich, 27.09.2024 ([YouTube](https://www.youtube.com/watch?v=1-2e-OpvV-Y))
+* [Brick your Juice Shop in 319 easy steps](https://www.meetup.com/owasp-hamburg-stammtisch/events/302138351/)
+  by Jannik Hollenbach & Björn Kimminich, [69. OWASP Stammtisch Hamburg](https://owasp.org/www-chapter-germany/stammtische/hamburg/), 23.07.2024
+* [OWASP Juice Shop - An Open Source Software and security Fairytale](https://ndc-security.com/agenda/owasp-juice-shop-an-open-source-software-and-security-fairytale-09mg/09ko186cud8) by Björn Kimminich, [NDC Security 2024](https://ndc-security.com/), 11.01.2024
 
 #### 2023
 
-* :date: [Juice Shop Training: Train the Trainer Edition](http://www.owaspbenelux.eu/program/training#Bj%C3%B6rn-Kimminich) with Björn Kimminich, [OWASP BeNeLux Days 2023](http://www.owaspbenelux.eu/). 24.11.2023
-* :date: [OWASP Juice Shop - An Open Source Software (and security) Fairytale](http://www.owaspbenelux.eu/program/talks#Bj%C3%B6rn-Kimminich) by Björn Kimminich, [OWASP BeNeLux Days 2023](http://www.owaspbenelux.eu/). 23.11.2023 [YouTube](https://youtu.be/54caQ4g72oI)
+* [Juice Shop Training: Train the Trainer Edition](http://www.owaspbenelux.eu/program/training#Bj%C3%B6rn-Kimminich) with Björn Kimminich, [OWASP BeNeLux Days 2023](http://www.owaspbenelux.eu/). 24.11.2023
+* [OWASP Juice Shop - An Open Source Software (and security) Fairytale](http://www.owaspbenelux.eu/program/talks#Bj%C3%B6rn-Kimminich) by Björn Kimminich, [OWASP BeNeLux Days 2023](http://www.owaspbenelux.eu/). 23.11.2023 ([YouTube](https://youtu.be/54caQ4g72oI))
 * [How Vulnerable is Juice Shop? A Secure Code Review of Insecure Code](https://www.nationalcybersummit.com/Program/2023-Agenda) by Joshua Beck, [National Cyber Summit 2023](https://www.nationalcybersummit.com/Home). 20.09.2023 
 * [Track keynote: OWASP Juice Shop](https://sikkerhetsfestivalen.no/program-2023) by Björn Kimminich, [Sikkerhetsfestivalen 2023](https://sikkerhetsfestivalen.no/). 29.08.2023
-* [Juice Shop Update³](https://god.owasp.de/2023/schedule/index.html) by Björn Kimminich, [German OWASP Day 2023](https://god.owasp.de/2023). 31.05.2023 [YouTube](https://youtu.be/87DuRYwXtxk)
+* [Juice Shop Update³](https://god.owasp.de/2023/schedule/index.html) by Björn Kimminich, [German OWASP Day 2023](https://god.owasp.de/2023). 31.05.2023 ([YouTube](https://youtu.be/87DuRYwXtxk))
 * [Juice Shop Training: Train the Trainer Edition](https://god.owasp.de/2023/schedule/index.html) with Björn Kimminich, [German OWASP Day 2023](https://god.owasp.de/2023). 30.05.2023
 * [OWASP Juice Shop](https://www.meetup.com/owasp-chapter-netherlands-meetup/events/292323208)
-  by Björn Kimminich, [April 2023 OWASP Chapter Netherlands Meetup](https://www.meetup.com/owasp-chapter-netherlands-meetup/), 20.04.2023 [YouTube](https://www.youtube.com/live/Bhp3LpgtNZ4?feature=share&t=3856)
-* [Squeezing the last drop out of OWASP Juice Shop](https://owasp2023globalappsecdublin.sched.com/event/1FWfq/squeezing-the-last-drop-out-of-owasp-juice-shop) by Björn Kimminich, [OWASP 2023 Global AppSec Dublin](https://dublin.globalappsec.org/), 15.02.2023  [YouTube](https://youtu.be/m1f2fPC8hLU)
+  by Björn Kimminich, [April 2023 OWASP Chapter Netherlands Meetup](https://www.meetup.com/owasp-chapter-netherlands-meetup/), 20.04.2023 ([YouTube](https://www.youtube.com/live/Bhp3LpgtNZ4?feature=share&t=3856))
+* [Squeezing the last drop out of OWASP Juice Shop](https://owasp2023globalappsecdublin.sched.com/event/1FWfq/squeezing-the-last-drop-out-of-owasp-juice-shop) by Björn Kimminich, [OWASP 2023 Global AppSec Dublin](https://dublin.globalappsec.org/), 15.02.2023  ([YouTube](https://youtu.be/m1f2fPC8hLU))
 
 #### 2022
 

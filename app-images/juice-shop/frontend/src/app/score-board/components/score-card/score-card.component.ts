@@ -1,9 +1,11 @@
 import { Component, Input } from '@angular/core'
+import { DecimalPipe } from '@angular/common'
 
 @Component({
   selector: 'score-card',
   templateUrl: './score-card.component.html',
-  styleUrls: ['./score-card.component.scss']
+  styleUrls: ['./score-card.component.scss'],
+  imports: [DecimalPipe]
 })
 export class ScoreCardComponent {
   @Input()
@@ -16,8 +18,8 @@ export class ScoreCardComponent {
   public score: number
 
   @Input()
-  public showAsPercentage: boolean = true
+  public showAsPercentage = true
 
   @Input()
-  public showProgressBar: boolean = true
+  public showProgressBar = true
 }
