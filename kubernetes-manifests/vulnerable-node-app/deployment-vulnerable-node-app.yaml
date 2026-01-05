@@ -10,6 +10,8 @@ metadata:
   namespace: vulnerable-node-app
   labels:
     app: vulnerable-node-app
+    demo: roadshow
+    repo: demo-apps
 spec:
   replicas: 1
   selector:
@@ -19,6 +21,8 @@ spec:
     metadata:
       labels:
         app: vulnerable-node-app
+        demo: roadshow
+        repo: demo-apps
     spec:
       containers:
         - name: vulnerable-node-app

@@ -5,6 +5,8 @@ kind: Service
 metadata:
   labels:
     app: api-server
+    demo: roadshow
+    repo: demo-apps
   name: api-server-service
   namespace: backend
 spec:

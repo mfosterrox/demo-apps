@@ -5,6 +5,9 @@ apiVersion: networking.k8s.io/v1
 metadata:
   name: deny-all
   namespace: medical
+  labels:
+    demo: roadshow
+    repo: demo-apps
 spec:
   policyTypes:
   - Ingress

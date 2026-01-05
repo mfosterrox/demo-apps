@@ -11,6 +11,7 @@ metadata:
   labels:
     app: webgoat
     demo: roadshow
+    repo: demo-apps
 spec:
   replicas: 1
   selector:
@@ -20,6 +21,8 @@ spec:
     metadata:
       labels:
         app: webgoat
+        demo: roadshow
+        repo: demo-apps
     spec:
       containers:
       - name: webgoat
@@ -37,6 +40,8 @@ metadata:
   namespace: webgoat
   labels:
     app: webgoat
+    demo: roadshow
+    repo: demo-apps
 spec:
   ports:
   - protocol: TCP
@@ -53,6 +58,8 @@ metadata:
   namespace: webgoat
   labels:
     app: webgoat
+    demo: roadshow
+    repo: demo-apps
 spec:
   to:
     kind: Service
@@ -69,6 +76,8 @@ metadata:
   namespace: webgoat
   labels:
     app: webgoat
+    demo: roadshow
+    repo: demo-apps
 data:
   WEBGOAT_PORT: "8080"
 ---

@@ -7,6 +7,8 @@ metadata:
   namespace: medical
   labels:
     app: patient-db
+    demo: roadshow
+    repo: demo-apps
 spec:
   replicas: 1
   selector:
@@ -16,6 +18,8 @@ spec:
     metadata:
      labels:
        app: patient-db
+       demo: roadshow
+       repo: demo-apps
     spec:
       imagePullSecrets:
       - name: rhacs-demo-pull-pull-secret

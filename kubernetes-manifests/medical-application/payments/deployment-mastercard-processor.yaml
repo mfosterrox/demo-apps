@@ -8,6 +8,8 @@ metadata:
   namespace: payments
   labels:
     app: mastercard-processor
+    demo: roadshow
+    repo: demo-apps
 spec:
   replicas: 1
   selector:
@@ -17,6 +19,8 @@ spec:
     metadata:
      labels:
        app: mastercard-processor
+       demo: roadshow
+       repo: demo-apps
     spec:
       imagePullSecrets:
       - name: rhacs-demo-pull-pull-secret

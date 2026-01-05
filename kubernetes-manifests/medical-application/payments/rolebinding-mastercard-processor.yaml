@@ -4,6 +4,8 @@ metadata:
   name: mastercard-processor
   labels:
     app: mastercard-processor
+    demo: roadshow
+    repo: demo-apps
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole

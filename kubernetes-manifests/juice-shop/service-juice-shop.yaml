@@ -3,6 +3,9 @@ kind: Service
 metadata:
   name: juice-shop
   namespace: juice-shop
+  labels:
+    demo: roadshow
+    repo: demo-apps
 spec:
   selector:
     app: juice-shop

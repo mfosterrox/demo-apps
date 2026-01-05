@@ -5,6 +5,8 @@ metadata:
   namespace: operations
   labels:
     app: puppet-master
+    demo: roadshow
+    repo: demo-apps
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role

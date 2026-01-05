@@ -8,6 +8,9 @@ kind: Service
 metadata:
   name: ctf-web-to-system-service
   namespace: ctf-web-to-system
+  labels:
+    demo: roadshow
+    repo: demo-apps
 spec:
   selector:
     app: ctf-web-to-system
@@ -25,6 +28,7 @@ metadata:
   labels:
     app: ctf-web-to-system
     demo: roadshow
+    repo: demo-apps
   annotation:
     app: ctf-web-to-system
 spec:
@@ -36,6 +40,8 @@ spec:
     metadata:
       labels:
         app: ctf-web-to-system
+        demo: roadshow
+        repo: demo-apps
     spec:
       containers:
       - name: ctf-web-container
@@ -50,6 +56,8 @@ metadata:
   namespace: ctf-web-to-system
   labels:
     app: ctf-web-to-system
+    demo: roadshow
+    repo: demo-apps
 spec:
   to:
     kind: Service

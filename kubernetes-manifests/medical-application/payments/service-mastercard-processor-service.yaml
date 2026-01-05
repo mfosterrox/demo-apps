@@ -5,6 +5,8 @@ kind: Service
 metadata:
   labels:
     app: mastercard-processor
+    demo: roadshow
+    repo: demo-apps
   name: mastercard-processor-service
   namespace: payments
 spec:

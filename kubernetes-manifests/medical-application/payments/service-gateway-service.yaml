@@ -5,6 +5,8 @@ kind: Service
 metadata:
   labels:
     app: gateway
+    demo: roadshow
+    repo: demo-apps
   name: gateway-service
   namespace: payments
 spec:

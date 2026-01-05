@@ -5,6 +5,8 @@ metadata:
   namespace: backend
   labels:
     app: backend-atlas
+    demo: roadshow
+    repo: demo-apps
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role

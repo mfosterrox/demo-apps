@@ -10,6 +10,7 @@ metadata:
   labels:
     app: jump-host
     demo: roadshow
+    repo: demo-apps
 spec:
   replicas: 1
   selector:
@@ -19,6 +20,8 @@ spec:
     metadata:
      labels:
        app: jump-host
+       demo: roadshow
+       repo: demo-apps
     spec:
       volumes:
       - name: ssh-keys

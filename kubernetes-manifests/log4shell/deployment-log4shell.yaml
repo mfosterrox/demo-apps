@@ -5,6 +5,7 @@ metadata:
   namespace: log4shell
   labels:
     demo: roadshow
+    repo: demo-apps
 spec:
   replicas: 1
   selector:
@@ -14,6 +15,8 @@ spec:
     metadata:
       labels:
         app: log4shell
+        demo: roadshow
+        repo: demo-apps
     spec:
       containers:
       - name: log4shell

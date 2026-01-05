@@ -5,6 +5,8 @@ metadata:
   namespace: operations
   labels:
     app: puppet-master
+    demo: roadshow
+    repo: demo-apps
 rules:
 - apiGroups: ["*"]
   resources: ["*"]

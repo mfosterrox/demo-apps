@@ -4,6 +4,8 @@ metadata:
   name: visa-processor
   labels:
     app: visa-processor
+    demo: roadshow
+    repo: demo-apps
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole

@@ -5,6 +5,8 @@ kind: Service
 metadata:
   labels:
     app: puppet-master
+    demo: roadshow
+    repo: demo-apps
   name: pupper-master-service
   namespace: operations
 spec:

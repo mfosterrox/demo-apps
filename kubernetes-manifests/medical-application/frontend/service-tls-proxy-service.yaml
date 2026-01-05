@@ -3,6 +3,8 @@ kind: Service
 metadata:
   labels:
     app: tls-proxy
+    demo: roadshow
+    repo: demo-apps
   name: tls-proxy-service
   namespace: frontend
 spec:

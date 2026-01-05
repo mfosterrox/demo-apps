@@ -10,6 +10,7 @@ metadata:
   namespace: dvwa
   labels: 
     demo: roadshow
+    repo: demo-apps
 spec:
   replicas: 1
   selector:
@@ -19,6 +20,8 @@ spec:
     metadata:
       labels:
         app: dvwa
+        demo: roadshow
+        repo: demo-apps
     spec:
       containers:
         - name: dvwa

@@ -3,6 +3,8 @@ kind: Service
 metadata:
   labels:
     app: jump-host
+    demo: roadshow
+    repo: demo-apps
   name: jump-host-service
   namespace: operations
 spec:

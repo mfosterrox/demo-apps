@@ -3,6 +3,9 @@ kind: Service
 metadata:
   name: vulnerable-node-app
   namespace: vulnerable-node-app
+  labels:
+    demo: roadshow
+    repo: demo-apps
 spec:
   selector:
     app: vulnerable-node-app

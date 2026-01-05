@@ -4,6 +4,9 @@ metadata:
   creationTimestamp: null
   name: log4shell-netpol
   namespace: log4shell
+  labels:
+    demo: roadshow
+    repo: demo-apps
 spec:
   egress:
   - ports:

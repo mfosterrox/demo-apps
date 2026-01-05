@@ -5,6 +5,8 @@ metadata:
   namespace: backend
   labels:
     app: backend-atlas
+    demo: roadshow
+    repo: demo-apps
 rules:
 - apiGroups: [""]
   resources: ["configmaps"]

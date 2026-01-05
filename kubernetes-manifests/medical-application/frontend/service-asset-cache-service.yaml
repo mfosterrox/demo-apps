@@ -5,6 +5,8 @@ kind: Service
 metadata:
   labels:
     app: asset-cache
+    demo: roadshow
+    repo: demo-apps
   name: asset-cache-service
   namespace: frontend
 spec:

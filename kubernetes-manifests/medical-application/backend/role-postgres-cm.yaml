@@ -5,6 +5,8 @@ metadata:
   namespace: backend
   labels:
     app: postgres
+    demo: roadshow
+    repo: demo-apps
 rules:
 - apiGroups: [""]       # core
   resources: ["configmaps"]

@@ -5,6 +5,8 @@ kind: Service
 metadata:
   labels:
     app: patient-db
+    demo: roadshow
+    repo: demo-apps
   name: patient-db-service
   namespace: medical
 spec:

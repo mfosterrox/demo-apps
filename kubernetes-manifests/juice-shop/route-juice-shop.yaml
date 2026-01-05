@@ -3,6 +3,9 @@ kind: Route
 metadata:
   name: juice-shop
   namespace: juice-shop
+  labels:
+    demo: roadshow
+    repo: demo-apps
 spec:
   to:
     kind: Service

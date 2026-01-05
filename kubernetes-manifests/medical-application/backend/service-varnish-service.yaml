@@ -5,6 +5,8 @@ kind: Service
 metadata:
   labels:
     app: varnish
+    demo: roadshow
+    repo: demo-apps
   name: varnish-service
   namespace: backend
 spec:

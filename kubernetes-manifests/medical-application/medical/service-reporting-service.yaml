@@ -5,6 +5,8 @@ kind: Service
 metadata:
   labels:
     app: reporting
+    demo: roadshow
+    repo: demo-apps
   name: reporting-service
   namespace: medical
 spec:

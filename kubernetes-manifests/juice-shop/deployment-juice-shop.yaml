@@ -5,6 +5,8 @@ metadata:
   namespace: juice-shop
   labels:
     app: juice-shop
+    demo: roadshow
+    repo: demo-apps
 spec:
   replicas: 1
   selector:
@@ -14,6 +16,8 @@ spec:
     metadata:
       labels:
         app: juice-shop
+        demo: roadshow
+        repo: demo-apps
     spec:
       containers:
         - name: juice-shop
