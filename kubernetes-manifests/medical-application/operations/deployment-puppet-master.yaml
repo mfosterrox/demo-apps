@@ -1,9 +1,9 @@
 # Deployment named "puppet-master"
 # Listens on :8140
 # Runs apt-get
-# Runs nmap
-# Mounts the host Docker socket
-# Runs as privileged
+# Runs nmap (note: network scanning capabilities limited due to SCC restrictions)
+# Note: Host Docker socket mount removed due to SCC restrictions
+# Note: Privileged mode removed due to SCC restrictions
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -27,10 +27,6 @@ spec:
     spec:
       imagePullSecrets:
       - name: rhacs-demo-pull-pull-secret
-      volumes:
-      - hostPath:
-          path: /var/run/docker.sock
-        name: var-run-docker-sock
       containers:
       - image: quay.io/rhacs-demo/netflow:latest
         command: ["/bin/sh"]
@@ -43,13 +39,7 @@ spec:
           capabilities:
             drop:
               - ALL
-            add:
-              - NET_ADMIN
-              - NET_RAW
         ports:
         - containerPort: 8140
           protocol: TCP
-        volumeMounts:
-        - mountPath: /host/var/run/docker.sock
-          name: var-run-docker-sock
 
