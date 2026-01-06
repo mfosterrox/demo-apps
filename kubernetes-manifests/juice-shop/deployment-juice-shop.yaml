@@ -19,6 +19,21 @@ spec:
         demo: roadshow
         repo: demo-apps
     spec:
+      initContainers:
+        - name: setup-permissions
+          image: busybox:latest
+          command: ['sh', '-c']
+          args:
+            - |
+              mkdir -p /well-known/csaf
+              chown -R 65532:0 /well-known
+              chmod -R 775 /well-known
+              ls -la /well-known || true
+          volumeMounts:
+            - name: well-known-data
+              mountPath: /well-known
+          securityContext:
+            runAsUser: 0
       containers:
         - name: juice-shop
           image: bkimminich/juice-shop
@@ -26,10 +41,15 @@ spec:
             - containerPort: 3000
           securityContext:
             runAsNonRoot: true
+            runAsUser: 65532
             allowPrivilegeEscalation: false
+            fsGroup: 0
           env:
             - name: NODE_ENV
               value: "production"
+          volumeMounts:
+            - name: well-known-data
+              mountPath: /juice-shop/.well-known
           resources:
             limits:
               memory: "512Mi"
@@ -37,4 +57,7 @@ spec:
             requests:
               memory: "256Mi"
               cpu: "250m"
+      volumes:
+        - name: well-known-data
+          emptyDir: {}
 
