@@ -31,7 +31,8 @@ spec:
             - containerPort: 3000
               name: http
           securityContext:
-            runAsUser: 0
+            runAsUser: 1001515000
+            runAsNonRoot: true
             allowPrivilegeEscalation: false
             capabilities:
               drop:
