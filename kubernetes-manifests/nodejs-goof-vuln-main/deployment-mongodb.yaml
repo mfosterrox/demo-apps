@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: mongodb
-          image: mongo:3
+          image: docker.io/mongo:3
           ports:
             - containerPort: 27017
               name: mongodb
