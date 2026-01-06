@@ -87,6 +87,7 @@ metadata:
   name: wordpress-pvc
   namespace: frontend
   labels:
+    app: wordpress
     demo: roadshow
     repo: demo-apps
 spec:
@@ -96,3 +97,4 @@ spec:
   resources:
     requests:
       storage: 10Gi
+  volumeMode: Filesystem
