@@ -20,8 +20,7 @@ spec:
         repo: demo-apps
     spec:
       securityContext:
-        fsGroup: 1001695000
-        supplementalGroups: [1001695000]
+        runAsNonRoot: true
       initContainers:
       - name: volume-permissions
         image: bitnami/wordpress:latest
@@ -29,13 +28,12 @@ spec:
         args:
           - |
             mkdir -p /bitnami/wordpress
-            chown -R 1001695000:1001695000 /bitnami/wordpress
+            chown -R $(id -u):$(id -g) /bitnami/wordpress
             chmod -R 775 /bitnami/wordpress
             # Ensure the directory is writable for the WordPress user
             find /bitnami/wordpress -type d -exec chmod 775 {} \;
             find /bitnami/wordpress -type f -exec chmod 664 {} \;
         securityContext:
-          runAsUser: 1001695000
           runAsNonRoot: true
         volumeMounts:
         - name: wordpress-data
@@ -44,8 +42,7 @@ spec:
       - image: bitnami/wordpress:latest
         name: wordpress
         securityContext:
-          runAsUser: 1001695000
-          runAsGroup: 1001695000
+          runAsNonRoot: true
           allowPrivilegeEscalation: false
           capabilities:
             drop:
@@ -62,11 +59,6 @@ spec:
           value: "wordpress"
         - name: WORDPRESS_DATABASE_NAME
           value: "wordpress"
-        # Override bitnami image's default user ID
-        - name: BITNAMI_APP_USER
-          value: "1001695000"
-        - name: BITNAMI_APP_GROUP
-          value: "1001695000"
         volumeMounts:
         - name: wordpress-data
           mountPath: /bitnami/wordpress 
