@@ -12,9 +12,23 @@ RUN apt-get update && \
 RUN a2enmod rewrite
 
 # Configure Apache to listen on port 8080 instead of 80 (for non-root user)
-RUN sed -i 's/^Listen 80$/Listen 8080/' /etc/apache2/ports.conf && \
-    sed -i 's/:80>/:8080>/g' /etc/apache2/sites-available/*.conf && \
-    sed -i 's/:80>/:8080>/g' /etc/apache2/sites-enabled/*.conf || true
+RUN echo "Listen 8080" > /etc/apache2/ports.conf && \
+    echo "<IfModule ssl_module>" >> /etc/apache2/ports.conf && \
+    echo "    Listen 8443" >> /etc/apache2/ports.conf && \
+    echo "</IfModule>" >> /etc/apache2/ports.conf && \
+    echo "<VirtualHost *:8080>" > /etc/apache2/sites-available/000-default.conf && \
+    echo "    ServerAdmin webmaster@localhost" >> /etc/apache2/sites-available/000-default.conf && \
+    echo "    DocumentRoot /var/www/html" >> /etc/apache2/sites-available/000-default.conf && \
+    echo "    <Directory /var/www/html>" >> /etc/apache2/sites-available/000-default.conf && \
+    echo "        Options Indexes FollowSymLinks" >> /etc/apache2/sites-available/000-default.conf && \
+    echo "        AllowOverride All" >> /etc/apache2/sites-available/000-default.conf && \
+    echo "        Require all granted" >> /etc/apache2/sites-available/000-default.conf && \
+    echo "    </Directory>" >> /etc/apache2/sites-available/000-default.conf && \
+    echo "    ErrorLog \${APACHE_LOG_DIR}/error.log" >> /etc/apache2/sites-available/000-default.conf && \
+    echo "    CustomLog \${APACHE_LOG_DIR}/access.log combined" >> /etc/apache2/sites-available/000-default.conf && \
+    echo "</VirtualHost>" >> /etc/apache2/sites-available/000-default.conf && \
+    a2ensite 000-default.conf && \
+    echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
 # Set working directory
 WORKDIR /var/www/html
@@ -30,5 +44,6 @@ RUN chown -R www-data:www-data /var/www/html && \
 
 EXPOSE 8080
 
-# Apache will start automatically via the base image's CMD
+# Override CMD to ensure Apache starts on port 8080
+CMD ["apache2-foreground"]
 
