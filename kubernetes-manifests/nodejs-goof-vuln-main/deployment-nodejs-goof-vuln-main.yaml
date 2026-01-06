@@ -30,7 +30,6 @@ spec:
               chmod -R 777 /tmp/npm-cache
               chmod -R 777 /.npm
           securityContext:
-            runAsUser: 1001755000
             runAsNonRoot: true
           volumeMounts:
             - name: npm-cache

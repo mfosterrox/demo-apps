@@ -26,7 +26,6 @@ spec:
             - containerPort: 8080
               name: http
           securityContext:
-            runAsUser: 1001765000
             runAsNonRoot: true
             allowPrivilegeEscalation: false
             capabilities:
