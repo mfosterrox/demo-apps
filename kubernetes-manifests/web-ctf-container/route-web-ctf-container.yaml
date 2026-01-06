@@ -1,0 +1,19 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: web-ctf-container
+  namespace: web-ctf-container
+  labels:
+    app: web-ctf-container
+    demo: roadshow
+    repo: demo-apps
+spec:
+  to:
+    kind: Service
+    name: web-ctf-container
+  port:
+    targetPort: 80
+  tls:
+    termination: edge
+  wildcardPolicy: None
+

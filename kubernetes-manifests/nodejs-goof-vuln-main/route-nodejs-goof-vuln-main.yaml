@@ -1,0 +1,19 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: nodejs-goof-vuln-main
+  namespace: nodejs-goof-vuln-main
+  labels:
+    app: nodejs-goof-vuln-main
+    demo: roadshow
+    repo: demo-apps
+spec:
+  to:
+    kind: Service
+    name: nodejs-goof-vuln-main
+  port:
+    targetPort: 80
+  tls:
+    termination: edge
+  wildcardPolicy: None
+

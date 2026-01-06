@@ -1,0 +1,19 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: apache-struts
+  namespace: apache-struts
+  labels:
+    app: apache-struts
+    demo: roadshow
+    repo: demo-apps
+spec:
+  to:
+    kind: Service
+    name: apache-struts
+  port:
+    targetPort: 80
+  tls:
+    termination: edge
+  wildcardPolicy: None
+

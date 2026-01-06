@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodejs-goof-vuln-main
+  namespace: nodejs-goof-vuln-main
+  labels:
+    app: nodejs-goof-vuln-main
+    demo: roadshow
+    repo: demo-apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nodejs-goof-vuln-main
+  template:
+    metadata:
+      labels:
+        app: nodejs-goof-vuln-main
+        demo: roadshow
+        repo: demo-apps
+    spec:
+      containers:
+        - name: nodejs-goof-vuln-main
+          image: quay.io/mfoster/nodejs-goof-vuln-main:0.1.0
+          ports:
+            - containerPort: 3001
+              name: http
+            - containerPort: 9229
+              name: debug
+          env:
+            - name: PORT
+              value: "3001"
+            - name: MONGODB_URI
+              value: "mongodb://mongodb:27017/goof"
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+

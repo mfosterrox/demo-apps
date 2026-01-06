@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-ctf-container
+  namespace: web-ctf-container
+  labels:
+    app: web-ctf-container
+    demo: roadshow
+    repo: demo-apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-ctf-container
+  template:
+    metadata:
+      labels:
+        app: web-ctf-container
+        demo: roadshow
+        repo: demo-apps
+    spec:
+      containers:
+        - name: web-ctf-container
+          image: quay.io/mfoster/web-ctf-container:0.1.0
+          ports:
+            - containerPort: 80
+              name: http
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+

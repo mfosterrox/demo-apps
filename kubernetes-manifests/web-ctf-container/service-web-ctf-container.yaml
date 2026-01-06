@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-ctf-container
+  namespace: web-ctf-container
+  labels:
+    app: web-ctf-container
+    demo: roadshow
+    repo: demo-apps
+spec:
+  selector:
+    app: web-ctf-container
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      name: http
+  type: ClusterIP
+

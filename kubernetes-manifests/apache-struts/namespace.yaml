@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: apache-struts
+  labels:
+    demo: roadshow
+    repo: demo-apps
+

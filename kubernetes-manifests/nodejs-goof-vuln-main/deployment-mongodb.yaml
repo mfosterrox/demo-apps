@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb
+  namespace: nodejs-goof-vuln-main
+  labels:
+    app: mongodb
+    demo: roadshow
+    repo: demo-apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+        demo: roadshow
+        repo: demo-apps
+    spec:
+      containers:
+        - name: mongodb
+          image: mongo:3
+          ports:
+            - containerPort: 27017
+              name: mongodb
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+
