@@ -44,6 +44,12 @@ spec:
               name: http
             - containerPort: 9229
               name: debug
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           env:
             - name: PORT
               value: "3001"
