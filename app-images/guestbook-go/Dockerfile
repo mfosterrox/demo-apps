@@ -23,6 +23,9 @@ WORKDIR /root/
 # Copy the binary from builder
 COPY --from=builder /app/guestbook .
 
+# Ensure the binary has execute permissions
+RUN chmod +x ./guestbook
+
 EXPOSE 3000
 
 CMD ["./guestbook"]
