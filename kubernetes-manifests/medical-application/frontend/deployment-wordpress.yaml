@@ -20,8 +20,8 @@ spec:
         repo: demo-apps
     spec:
       securityContext:
-        fsGroup: 1001
-        supplementalGroups: [1001]
+        fsGroup: 1001695000
+        supplementalGroups: [1001695000]
       initContainers:
       - name: volume-permissions
         image: bitnami/wordpress:latest
@@ -29,13 +29,13 @@ spec:
         args:
           - |
             mkdir -p /bitnami/wordpress
-            chown -R 1001:1001 /bitnami/wordpress
+            chown -R 1001695000:1001695000 /bitnami/wordpress
             chmod -R 775 /bitnami/wordpress
             # Ensure the directory is writable for the WordPress user
             find /bitnami/wordpress -type d -exec chmod 775 {} \;
             find /bitnami/wordpress -type f -exec chmod 664 {} \;
         securityContext:
-          runAsUser: 1001515000
+          runAsUser: 1001695000
           runAsNonRoot: true
         volumeMounts:
         - name: wordpress-data
@@ -44,8 +44,8 @@ spec:
       - image: bitnami/wordpress:latest
         name: wordpress
         securityContext:
-          runAsUser: 1001
-          runAsGroup: 1001
+          runAsUser: 1001695000
+          runAsGroup: 1001695000
           allowPrivilegeEscalation: false
           capabilities:
             drop:

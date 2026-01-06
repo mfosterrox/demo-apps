@@ -12,7 +12,7 @@ spec:
     kind: Service
     name: web-ctf-container
   port:
-    targetPort: 80
+    targetPort: 8080
   tls:
     termination: edge
   wildcardPolicy: None

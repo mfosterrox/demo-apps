@@ -24,7 +24,11 @@ spec:
       containers:
       - image: quay.io/rhacs-demo/proxy:latest
         securityContext:
-          privileged: true
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
         command: ["/bin/entrypoint"]
         imagePullPolicy: Always
         name: proxy

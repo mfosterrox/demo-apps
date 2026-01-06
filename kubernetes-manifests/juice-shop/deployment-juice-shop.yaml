@@ -20,8 +20,8 @@ spec:
         repo: demo-apps
     spec:
       securityContext:
-        fsGroup: 1001515000
-        supplementalGroups: [1001515000]
+        fsGroup: 1001655000
+        supplementalGroups: [1001655000]
       initContainers:
         - name: setup-permissions
           image: busybox:latest
@@ -30,7 +30,7 @@ spec:
             - |
               mkdir -p /well-known/csaf
               touch /well-known/csaf/provider-metadata.json
-              chown -R 1001515000:1001515000 /well-known || true
+              chown -R 1001655000:1001655000 /well-known || true
               chmod -R 777 /well-known
               echo "Directory structure created:"
               ls -laR /well-known || true
@@ -38,9 +38,8 @@ spec:
             - name: well-known-data
               mountPath: /well-known
           securityContext:
-            runAsUser: 1001515000
-            runAsGroup: 1001515000
-            fsGroup: 1001515000
+            runAsUser: 1001655000
+            runAsGroup: 1001655000
       containers:
         - name: juice-shop
           image: bkimminich/juice-shop
@@ -48,11 +47,9 @@ spec:
             - containerPort: 3000
           securityContext:
             runAsNonRoot: true
-            runAsUser: 1001515000
-            runAsGroup: 1001515000
+            runAsUser: 1001655000
+            runAsGroup: 1001655000
             allowPrivilegeEscalation: false
-            fsGroup: 1001515000
-            supplementalGroups: [1001515000]
           env:
             - name: NODE_ENV
               value: "production"

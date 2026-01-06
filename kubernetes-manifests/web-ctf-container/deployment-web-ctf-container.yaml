@@ -23,7 +23,7 @@ spec:
         - name: web-ctf-container
           image: quay.io/mfoster/web-ctf-container:0.1.0
           ports:
-            - containerPort: 80
+            - containerPort: 8080
               name: http
           securityContext:
             runAsUser: 1001515000

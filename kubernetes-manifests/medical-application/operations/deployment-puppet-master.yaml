@@ -27,7 +27,6 @@ spec:
     spec:
       imagePullSecrets:
       - name: rhacs-demo-pull-pull-secret
-      serviceAccountName: puppet-master
       volumes:
       - hostPath:
           path: /var/run/docker.sock
@@ -39,7 +38,14 @@ spec:
         imagePullPolicy: Always
         name: puppet-master
         securityContext:
-          privileged: true
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+            add:
+              - NET_ADMIN
+              - NET_RAW
         ports:
         - containerPort: 8140
           protocol: TCP
