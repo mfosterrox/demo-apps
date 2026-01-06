@@ -26,12 +26,16 @@ spec:
           args:
             - |
               mkdir -p /tmp/npm-cache
+              mkdir -p /.npm
               chmod -R 777 /tmp/npm-cache
+              chmod -R 777 /.npm
           securityContext:
             runAsUser: 0
           volumeMounts:
             - name: npm-cache
               mountPath: /tmp/npm-cache
+            - name: npm-root-cache
+              mountPath: /.npm
       containers:
         - name: nodejs-goof-vuln-main
           image: quay.io/mfoster/nodejs-goof-vuln-main:0.1.0
@@ -47,11 +51,15 @@ spec:
               value: "mongodb://mongodb:27017/goof"
             - name: npm_config_cache
               value: "/tmp/npm-cache"
+            - name: NPM_CONFIG_CACHE
+              value: "/tmp/npm-cache"
             - name: HOME
               value: "/tmp"
           volumeMounts:
             - name: npm-cache
               mountPath: /tmp/npm-cache
+            - name: npm-root-cache
+              mountPath: /.npm
           resources:
             limits:
               memory: "512Mi"
@@ -61,5 +69,7 @@ spec:
               cpu: "250m"
       volumes:
         - name: npm-cache
+          emptyDir: {}
+        - name: npm-root-cache
           emptyDir: {}
 
