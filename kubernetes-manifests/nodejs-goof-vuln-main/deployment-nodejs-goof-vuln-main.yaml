@@ -27,8 +27,8 @@ spec:
             - |
               mkdir -p /tmp/npm-cache
               mkdir -p /.npm
-              chmod -R 777 /tmp/npm-cache
-              chmod -R 777 /.npm
+              # Permissions are handled by OpenShift's security context
+              # emptyDir volumes are writable by the assigned user
           securityContext:
             runAsNonRoot: true
           volumeMounts:
