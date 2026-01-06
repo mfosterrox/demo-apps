@@ -1,8 +1,6 @@
-FROM docker.io/php:8-apache
+FROM  quay.io/hummingbird/php:8
 
-LABEL org.opencontainers.image.source=https://github.com/digininja/DVWA
-LABEL org.opencontainers.image.description="DVWA pre-built image."
-LABEL org.opencontainers.image.licenses="gpl-3.0"
+LABEL maintainer="Foster <mfoster@redhat.com>"
 
 WORKDIR /var/www/html
 
