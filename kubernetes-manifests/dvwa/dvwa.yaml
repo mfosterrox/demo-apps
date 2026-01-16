@@ -1,27 +1,27 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: dvma
+  name: dvwa
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dvma
-  namespace: dvma
+  name: dvwa
+  namespace: dvwa
   labels: 
     demo: roadshow
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: dvma
+      app: dvwa
   template:
     metadata:
       labels:
-        app: dvma
+        app: dvwa
     spec:
       containers:
-        - name: dvma
+        - name: dvwa
           image: quay.io/mfoster/dvwa:latest
           command: ["/bin/bash", "-c", "while true; do sleep 1000; done"]
           stdin: true

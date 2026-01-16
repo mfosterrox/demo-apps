@@ -1,8 +1,8 @@
 # Define variables
 TEAM_NAME := mfoster
-VERSION := 0.1
+VERSION := 0.1.1
 APPLICATIONS:= dvwa juice-shop log4shell nodejs-goof-vuln-main rce-exploit rce-http-exploit webgoat frontend payment-processor database
-MANIFEST_DIR ?= kubernetes-manifests  
+MANIFEST_DIR ?= app-images  
 
 update:
 	@echo "Updating image tags in Kubernetes manifests in $(MANIFEST_DIR)"
@@ -14,40 +14,32 @@ update:
 	@echo "All relevant manifest files in $(MANIFEST_DIR) have been updated to use version: $(VERSION)"
 
 build-images:
-	docker buildx ls
-	docker buildx use mybuilder
-	docker buildx inspect --bootstrap
 	for component in $(APPLICATIONS); do \
 		( cd app-images/$${component}; \
-	  	docker buildx build --platform linux/amd64,linux/arm64 \
-	  	-t quay.io/$(TEAM_NAME)/$(COMPONENT):latest --push \
-	  	--cache-from=type=registry,ref=quay.io/$(TEAM_NAME)/$(COMPONENT):cache \
-	  	--cache-to=type=registry,ref=quay.io/$(TEAM_NAME)/$(COMPONENT):cache,mode=max . ; \
+	  	echo "Building $$component..."; \
+	  	podman build --platform linux/amd64,linux/arm64 \
+	  	-t quay.io/$(TEAM_NAME)/$${component}:latest . || exit 1; \
+	  	echo "Pushing $$component..."; \
+	  	podman push quay.io/$(TEAM_NAME)/$${component}:latest || exit 1; \
 		); \
 	done; \
 
 build:
 	@if [ -z "$(COMPONENT)" ]; then \
-		echo "Error: Please specify a COMPONENT to build (e.g., make build-image COMPONENT=example)."; \
+		echo "Error: Please specify a COMPONENT to build (e.g., make build COMPONENT=example)."; \
 		exit 1; \
 	fi
-	@if ! docker buildx inspect mybuilder > /dev/null 2>&1; then \
-		echo "Creating builder instance 'mybuilder'."; \
-		docker buildx create --use --name mybuilder; \
-	else \
-		echo "Using existing builder instance 'mybuilder'."; \
-	fi
-	docker buildx inspect --bootstrap
 	cd app-images/$(COMPONENT); \
-	docker buildx build --platform linux/amd64,linux/arm64 \
-	-t quay.io/$(TEAM_NAME)/$(COMPONENT):latest --push . ;
+	podman build --platform linux/amd64,linux/arm64 \
+	-t quay.io/$(TEAM_NAME)/$(COMPONENT):latest . ; \
+	podman push quay.io/$(TEAM_NAME)/$(COMPONENT):latest ;
 
 
 rm-all-containers:
-	docker rm $$(docker ps -a -q)
+	podman rm $$(podman ps -a -q)
 
 rm-all-images:
-	docker rmi -f $$(docker images -aq)
+	podman rmi -f $$(podman images -aq)
 
 build-tag-and-push:
 	make build-images
@@ -56,6 +48,6 @@ build-tag-and-push:
 pull:
 	for component in $(APPLICATIONS); do \
 		( cd app-images/$${component}; \
-		  docker pull quay.io/$(TEAM_NAME)/$${component}:latest \
+		  podman pull quay.io/$(TEAM_NAME)/$${component}:latest \
 		); \
 	done; \
