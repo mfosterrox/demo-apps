@@ -18,9 +18,9 @@ build-images:
 		( cd app-images/$${component}; \
 	  	echo "Building $$component..."; \
 	  	podman build --platform linux/amd64,linux/arm64 \
-	  	-t quay.io/$(TEAM_NAME)/$${component}:latest . || exit 1; \
+	  	-t quay.io/$(TEAM_NAME)/$${component}:$(VERSION) . || exit 1; \
 	  	echo "Pushing $$component..."; \
-	  	podman push quay.io/$(TEAM_NAME)/$${component}:latest || exit 1; \
+	  	podman push quay.io/$(TEAM_NAME)/$${component}:$(VERSION) || exit 1; \
 		); \
 	done; \
 
@@ -31,8 +31,8 @@ build:
 	fi
 	cd app-images/$(COMPONENT); \
 	podman build --platform linux/amd64,linux/arm64 \
-	-t quay.io/$(TEAM_NAME)/$(COMPONENT):latest . ; \
-	podman push quay.io/$(TEAM_NAME)/$(COMPONENT):latest ;
+	-t quay.io/$(TEAM_NAME)/$(COMPONENT):$(VERSION) . ; \
+	podman push quay.io/$(TEAM_NAME)/$(COMPONENT):$(VERSION) ;
 
 
 rm-all-containers:
@@ -41,6 +41,12 @@ rm-all-containers:
 rm-all-images:
 	podman rmi -f $$(podman images -aq)
 
+push-images:
+	for component in $(APPLICATIONS); do \
+		echo "Pushing $$component..."; \
+		podman push quay.io/$(TEAM_NAME)/$${component}:$(VERSION) || exit 1; \
+	done; \
+
 build-tag-and-push:
 	make build-images
 	make push-images
@@ -48,6 +54,6 @@ build-tag-and-push:
 pull:
 	for component in $(APPLICATIONS); do \
 		( cd app-images/$${component}; \
-		  podman pull quay.io/$(TEAM_NAME)/$${component}:latest \
+		  podman pull quay.io/$(TEAM_NAME)/$${component}:$(VERSION) \
 		); \
 	done; \
