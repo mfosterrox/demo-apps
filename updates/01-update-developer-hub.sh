@@ -5,7 +5,7 @@
 
 set -euo pipefail
 
-NAMESPACE="${NAMESPACE:-rhdh-operator}"
+NAMESPACE="${NAMESPACE:-backstage}"
 SUBSCRIPTION_NAME="${SUBSCRIPTION_NAME:-rhdh}"
 CHANNEL="${CHANNEL:-stable}"
 

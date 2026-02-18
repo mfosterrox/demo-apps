@@ -5,19 +5,19 @@
 
 set -euo pipefail
 
-# Dev Spaces operator is often in openshift-operators or devspaces
-NAMESPACE="${NAMESPACE:-}"
+# Dev Spaces operator is often in openshift-devspaces, devspaces, or openshift-operators
+NAMESPACE="${NAMESPACE:-openshift-devspaces}"
 CHANNEL="${CHANNEL:-stable}"
 
-echo "==> Updating Red Hat OpenShift Dev Spaces to channel: $CHANNEL"
+echo "==> Updating Red Hat OpenShift Dev Spaces (namespace: $NAMESPACE) to channel: $CHANNEL"
 
 if ! oc whoami &>/dev/null; then
   echo "ERROR: Not logged in to OpenShift. Run 'oc login' first."
   exit 1
 fi
 
-if [[ -z "$NAMESPACE" ]]; then
-  for ns in devspaces openshift-operators; do
+if [[ -z "$NAMESPACE" ]] || ! oc get namespace "$NAMESPACE" &>/dev/null; then
+  for ns in openshift-devspaces devspaces openshift-operators; do
     if oc get subscription -n "$ns" 2>/dev/null | grep -qi devspaces; then
       NAMESPACE="$ns"
       break
@@ -34,7 +34,16 @@ fi
 
 sub=$(oc get subscription -n "$NAMESPACE" -o name 2>/dev/null | grep -iE 'devspaces|dev-workspace' || oc get subscription -n "$NAMESPACE" -o name 2>/dev/null | head -1)
 if [[ -z "$sub" ]]; then
-  echo "ERROR: No subscription found in $NAMESPACE."
+  for ns in openshift-devspaces devspaces openshift-operators; do
+    sub=$(oc get subscription -n "$ns" -o name 2>/dev/null | grep -iE 'devspaces|dev-workspace' || true)
+    if [[ -n "$sub" ]]; then
+      NAMESPACE="$ns"
+      break
+    fi
+  done
+fi
+if [[ -z "$sub" ]]; then
+  echo "ERROR: No Dev Spaces subscription found. Set NAMESPACE= to the operator namespace."
   exit 1
 fi
 

@@ -23,8 +23,13 @@ fi
 
 sub=$(oc get subscription -n "$NAMESPACE" -o name 2>/dev/null | head -1)
 if [[ -z "$sub" ]]; then
-  sub=$(oc get subscription -n openshift-operators -o name 2>/dev/null | grep -i quay || true)
-  [[ -n "$sub" ]] && NAMESPACE=openshift-operators
+  for ns in quay-registry openshift-operators; do
+    sub=$(oc get subscription -n "$ns" -o name 2>/dev/null | grep -i quay || true)
+    if [[ -n "$sub" ]]; then
+      NAMESPACE="$ns"
+      break
+    fi
+  done
 fi
 if [[ -z "$sub" ]]; then
   echo "ERROR: No Quay subscription found in $NAMESPACE. Set NAMESPACE/SUBSCRIPTION_NAME if different."

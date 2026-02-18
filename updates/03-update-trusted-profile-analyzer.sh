@@ -5,22 +5,22 @@
 
 set -euo pipefail
 
-# Common namespace names for TPA
-NAMESPACE="${NAMESPACE:-}"
+# Common namespace names for TPA (trusted-profile-analyzer is typical)
+NAMESPACE="${NAMESPACE:-trusted-profile-analyzer}"
 SUBSCRIPTION_NAME="${SUBSCRIPTION_NAME:-}"
 CHANNEL="${CHANNEL:-stable}"
 
-echo "==> Updating Red Hat Trusted Profile Analyzer to channel: $CHANNEL"
+echo "==> Updating Red Hat Trusted Profile Analyzer (namespace: $NAMESPACE) to channel: $CHANNEL"
 
 if ! oc whoami &>/dev/null; then
   echo "ERROR: Not logged in to OpenShift. Run 'oc login' first."
   exit 1
 fi
 
-if [[ -z "$NAMESPACE" ]]; then
+if ! oc get namespace "$NAMESPACE" &>/dev/null; then
   NAMESPACE=$(oc get subscriptions -A -o jsonpath='{range .items[*]}{.metadata.namespace}{"\n"}{end}' 2>/dev/null | xargs -I{} sh -c 'oc get sub -n {} -o name 2>/dev/null | grep -qi trusted-profile && echo {}' | head -1)
 fi
-if [[ -z "$NAMESPACE" ]]; then
+if [[ -z "$NAMESPACE" ]] || ! oc get namespace "$NAMESPACE" &>/dev/null; then
   NAMESPACE=$(oc get ns -o name 2>/dev/null | sed 's|namespace/||' | xargs -I{} sh -c 'oc get sub -n {} -o jsonpath="{.items[*].metadata.name}" 2>/dev/null | grep -q trusted && echo {}' | head -1)
 fi
 if [[ -z "$NAMESPACE" ]]; then

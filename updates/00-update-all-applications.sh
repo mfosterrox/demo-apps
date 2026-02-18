@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Run all application update scripts in order (OpenShift operators first; cluster and RHEL last).
-# Prerequisites: oc logged in with cluster-admin. For 09, run on the RHEL host or skip.
+# Run all application update scripts in order (OpenShift operators first; cluster and RHACM last).
+# Prerequisites: oc logged in with cluster-admin.
 
 set -euo pipefail
 
@@ -17,7 +17,7 @@ run() {
   "$script" || { echo "WARNING: $script exited with $?"; }
 }
 
-echo "==> Updating all demo applications (01–08 from this machine; 09 run on RHEL host)"
+echo "==> Updating all demo applications (01–09)"
 run "./01-update-developer-hub.sh"
 run "./02-update-gitlab.sh"
 run "./03-update-trusted-profile-analyzer.sh"
@@ -28,7 +28,6 @@ run "./07-update-rhacs.sh"
 echo ""
 echo "--> OpenShift cluster (08): run ./08-update-openshift-cluster.sh and set CHANNEL/DO_UPGRADE as needed."
 run "./08-update-openshift-cluster.sh"
-echo ""
-echo "--> RHEL Developer Host (09): copy 09-update-rhel-developer-host.sh to the bastion and run it there with DO_UPDATE=yes to apply package updates."
+run "./09-update-rhacm.sh"
 echo ""
 echo "==> All operator update scripts have been run. Check CSV/operator status per namespace as needed."
