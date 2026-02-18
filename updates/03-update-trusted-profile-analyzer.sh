@@ -30,7 +30,27 @@ fi
 
 sub=$(oc get subscription -n "$NAMESPACE" -o name 2>/dev/null | grep -i trusted || oc get subscription -n "$NAMESPACE" -o name 2>/dev/null | head -1)
 if [[ -z "$sub" ]]; then
-  echo "ERROR: No subscription found in $NAMESPACE."
+  # TPA operator is often in openshift-operators or a dedicated namespace
+  for ns in openshift-operators trusted-profile-analyzer; do
+    if ! oc get namespace "$ns" &>/dev/null; then continue; fi
+    sub=$(oc get subscription -n "$ns" -o name 2>/dev/null | grep -iE 'trusted-profile|trusted-profile-analyzer|tpa' || true)
+    if [[ -n "$sub" ]]; then
+      NAMESPACE="$ns"
+      break
+    fi
+  done
+fi
+if [[ -z "$sub" ]]; then
+  # Cluster-wide search for TPA subscription
+  found=$(oc get subscriptions -A -o jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\n"}{end}' 2>/dev/null | grep -i trusted | head -1)
+  if [[ -n "$found" ]]; then
+    NAMESPACE="${found%%$'\t'*}"
+    name="${found#*$'\t'}"
+    sub="subscription.operators.coreos.com/$name"
+  fi
+fi
+if [[ -z "$sub" ]]; then
+  echo "ERROR: No Trusted Profile Analyzer subscription found. Set NAMESPACE= or run: oc get subscription -A | grep -i trusted"
   exit 1
 fi
 

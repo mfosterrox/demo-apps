@@ -5,7 +5,8 @@
 
 set -euo pipefail
 
-NAMESPACE="${NAMESPACE:-quay-enterprise}"
+# quay-operator subscription is often in quay-registry or quay-enterprise
+NAMESPACE="${NAMESPACE:-quay-registry}"
 SUBSCRIPTION_NAME="${SUBSCRIPTION_NAME:-quay-operator}"
 CHANNEL="${CHANNEL:-stable}"
 
@@ -16,14 +17,10 @@ if ! oc whoami &>/dev/null; then
   exit 1
 fi
 
-if ! oc get namespace "$NAMESPACE" &>/dev/null; then
-  echo "ERROR: Namespace '$NAMESPACE' not found. Is Quay installed?"
-  exit 1
-fi
-
-sub=$(oc get subscription -n "$NAMESPACE" -o name 2>/dev/null | head -1)
+sub=$(oc get subscription -n "$NAMESPACE" -o name 2>/dev/null | grep -i quay || oc get subscription -n "$NAMESPACE" -o name 2>/dev/null | head -1)
 if [[ -z "$sub" ]]; then
-  for ns in quay-registry openshift-operators; do
+  for ns in quay-registry quay-enterprise openshift-operators; do
+    if ! oc get namespace "$ns" &>/dev/null; then continue; fi
     sub=$(oc get subscription -n "$ns" -o name 2>/dev/null | grep -i quay || true)
     if [[ -n "$sub" ]]; then
       NAMESPACE="$ns"
@@ -32,14 +29,24 @@ if [[ -z "$sub" ]]; then
   done
 fi
 if [[ -z "$sub" ]]; then
-  echo "ERROR: No Quay subscription found in $NAMESPACE. Set NAMESPACE/SUBSCRIPTION_NAME if different."
+  found=$(oc get subscriptions -A -o jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\n"}{end}' 2>/dev/null | grep -i quay | head -1)
+  if [[ -n "$found" ]]; then
+    NAMESPACE="${found%%$'\t'*}"
+    name="${found#*$'\t'}"
+    sub="subscription.operators.coreos.com/$name"
+  fi
+fi
+if [[ -z "$sub" ]]; then
+  echo "ERROR: No Quay subscription found. Set NAMESPACE= or run: oc get subscription -A | grep -i quay"
   exit 1
 fi
 
-name=$(oc get subscription -n "$NAMESPACE" -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || echo "$SUBSCRIPTION_NAME")
-if [[ "$name" == "" ]]; then
-  name=$(basename "$sub")
+if ! oc get namespace "$NAMESPACE" &>/dev/null; then
+  echo "ERROR: Namespace '$NAMESPACE' not found. Is Quay installed?"
+  exit 1
 fi
+
+name=$(basename "$sub")
 echo "--> Patching subscription '$name' to channel: $CHANNEL"
 oc patch subscription -n "$NAMESPACE" "$name" --type=merge -p "{\"spec\":{\"channel\":\"$CHANNEL\"}}"
 

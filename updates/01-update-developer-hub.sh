@@ -21,9 +21,19 @@ if ! oc get namespace "$NAMESPACE" &>/dev/null; then
   exit 1
 fi
 
-sub=$(oc get subscription -n "$NAMESPACE" -o name 2>/dev/null | head -1)
+sub=$(oc get subscription -n "$NAMESPACE" -o name 2>/dev/null | grep -iE 'rhdh|developer-hub|backstage' || oc get subscription -n "$NAMESPACE" -o name 2>/dev/null | head -1)
 if [[ -z "$sub" ]]; then
-  echo "ERROR: No subscription found in $NAMESPACE. Check subscription name."
+  # Operator subscription is often in rhdh-operator or openshift-operators
+  for ns in rhdh-operator openshift-operators; do
+    sub=$(oc get subscription -n "$ns" -o name 2>/dev/null | grep -iE 'rhdh|developer-hub|backstage' || true)
+    if [[ -n "$sub" ]]; then
+      NAMESPACE="$ns"
+      break
+    fi
+  done
+fi
+if [[ -z "$sub" ]]; then
+  echo "ERROR: No Developer Hub subscription found in $NAMESPACE or operator namespaces. Is Developer Hub installed?"
   exit 1
 fi
 
