@@ -4,7 +4,7 @@ FROM python:3.12-alpine AS build
 RUN apk add --no-cache bash
 
 # Install required Python packages
-RUN pip install --no-cache-dir httpx psycopg psycopg_binary psycopg_pool starlette sse_starlette uvicorn
+RUN pip install --no-cache-dir httpx psycopg psycopg_binary psycopg_pool "starlette<1.0.0" sse_starlette uvicorn
 
 # Install vulnerable packages for testing
 RUN pip install --no-cache-dir setuptools==39.1.0

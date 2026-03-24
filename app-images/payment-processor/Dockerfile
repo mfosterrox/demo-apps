@@ -1,6 +1,6 @@
 FROM python:3.12-alpine AS build
 
-RUN pip install --no-cache-dir starlette uvicorn
+RUN pip install --no-cache-dir "starlette<1.0.0" uvicorn
 
 FROM python:3.12-alpine AS run
 
