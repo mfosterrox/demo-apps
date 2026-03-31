@@ -1,9 +1,9 @@
 apiVersion: config.stackrox.io/v1alpha1
 kind: SecurityPolicy
 metadata:
-  name: 60-day-scan-age-copy
+  name: 60-day-scan-age
 spec:
-  policyName: 60-Day Scan Age (COPY)
+  policyName: 60-Day Scan Age
   description: Alert on deployments with images that haven't been scanned in 60 days
   rationale: Out-of-date scans may not identify the most recent CVEs.
   remediation: Integrate a scanner with the StackRox Kubernetes Security Platform to trigger scans automatically.
