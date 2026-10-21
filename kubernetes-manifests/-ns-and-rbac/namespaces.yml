@@ -38,13 +38,14 @@ metadata:
   labels:
     name: operations
 ---
-# Namespace for payments
+# Namespace for payments. Also used by openshift-lightspeed-troubleshooting.
 apiVersion: v1
 kind: Namespace
 metadata:
   name: payments
   labels:
     name: payments
+    openshift.io/user-monitoring: "true"
 ---
 # Namespace for yelb app
 apiVersion: v1
